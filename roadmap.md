@@ -8,6 +8,6 @@
 		- python
 	- zoologia su stati/pulse etc etc con ergotropia 
 ## 03/03 ##
-- [ ] play around with qutip
-- [ ] write a function that outputs the ergotropy of a hamiltonian and state (both given as inputs)
+- [x] play around with qutip
+- [x] write a function that outputs the ergotropy of a hamiltonian and state (both given as inputs)
 - [ ] reread the theory articles
