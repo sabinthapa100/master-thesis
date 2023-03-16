@@ -8,5 +8,5 @@ Eventually my final thesis will be also uploaded as we continue to work on these
 
 # TODO
 - [ ] Check ergotropy function, I suspect it is not correct
-- [ ] Check if analitical ergotropy and energy for T = 0 matches
+- [x] Check if analitical ergotropy and energy for T = 0 matches
 - [ ] Compare the two qubit case
