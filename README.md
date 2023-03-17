@@ -7,6 +7,6 @@ The goal is to categorize which kind of states and Hamiltonians are better suite
 Eventually my final thesis will be also uploaded as we continue to work on these topics.
 
 # TODO
-- [ ] Check ergotropy function, I suspect it is not correct
+- [x] Check ergotropy function, I suspect it is not correct
 - [x] Check if analitical ergotropy and energy for T = 0 matches
 - [ ] Compare the two qubit case
