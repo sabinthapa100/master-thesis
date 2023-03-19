@@ -11,4 +11,4 @@ Eventually my final thesis will be also uploaded as we continue to work on these
 - [x] Check if analitical ergotropy and energy for T = 0 matches
 - [x] Compare the two qubit case
 - [x] Change plots axes to match the article
-- [ ] Probably there is something wrong in the calculation somewhere, debug!!
+- [x] Probably there is something wrong in the calculation somewhere, debug!!
