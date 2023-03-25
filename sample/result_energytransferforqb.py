@@ -20,7 +20,8 @@ import numpy as np
 import qutip as qt
 
 
-def compute_energy_ergotropy(_H_evolve, _H_B, _rho0, _times, _c_ops, _w_zero, _filename):
+def compute_energy_ergotropy(_H_evolve, _H_B, _rho0, _times, _c_ops, _w_zero,
+                             _filename):
     """ 
     Function that, given an Hamiltonian `_H_evolve` to evolve `_rho0`, outputs to `_filename` 
     energy and ergotropy of the evolution 
@@ -31,12 +32,16 @@ def compute_energy_ergotropy(_H_evolve, _H_B, _rho0, _times, _c_ops, _w_zero, _f
     rho_B = [result.states[i].ptrace(1) for i in range(len(result.states))]
 
     # write to file the energy results
-    with open('./outputs/results_energytransferforqb/energy_' + _filename + '.dat', 'w') as f:
+    with open(
+            './outputs/results_energytransferforqb/energy_' + _filename +
+            '.dat', 'w') as f:
         for i in range(len(rho_B)):
             f.write(str(qt.expect(_H_B, rho_B[i]) / _w_zero) + '\n')
 
     # write to file the ergotropy result
-    with open('./outputs/results_energytransferforqb/ergotropy_' + _filename + '.dat', 'w') as f:
+    with open(
+            './outputs/results_energytransferforqb/ergotropy_' + _filename +
+            '.dat', 'w') as f:
         for i in range(len(rho_B)):
             f.write(str(mf.ergotropy(_H_B, rho_B[i]) / _w_zero) + '\n')
 
@@ -83,7 +88,7 @@ def two_harmonic_oscillators():
     # Define the initial state
     rho0 = qt.tensor(qt.fock_dm(N_DIMS, 0), qt.fock_dm(N_DIMS, 0))
     # Define the times to integrate at, remember that we need at least 10^-3 precision
-    tlist = np.linspace(0, G*100, 10000)
+    tlist = np.linspace(0, G * 100, 10000)
 
     F = [0.1 * W_0, 0, 0.1 * W_0]
     N_B = [1, 1, 0]
@@ -91,14 +96,18 @@ def two_harmonic_oscillators():
     FILENAME = ["both_underdamped", "only_T_underdamped", "only_F_underdamped"]
 
     for i in range(3):
-        compute_energy_ergotropy(H_AB(G, operA, operB) + delta_HA_t0(F[i], operA), H_B, rho0, tlist,
-                                 [D_A(N_B[i], GAMMA[0], operA), D_AD(N_B[i], GAMMA[0], operA)], W_0, FILENAME[i])
+        compute_energy_ergotropy(
+            H_AB(G, operA, operB) + delta_HA_t0(F[i], operA), H_B, rho0, tlist,
+            [D_A(N_B[i], GAMMA[0], operA),
+             D_AD(N_B[i], GAMMA[0], operA)], W_0, FILENAME[i])
 
     FILENAME = ["both_overdamped", "only_T_overdamped", "only_F_overdamped"]
 
     for i in range(3):
-        compute_energy_ergotropy(H_AB(G, operA, operB) + delta_HA_t0(F[i], operA), H_B, rho0, tlist,
-                                 [D_A(N_B[i], GAMMA[1], operA), D_AD(N_B[i], GAMMA[1], operA)], W_0, FILENAME[i])
+        compute_energy_ergotropy(
+            H_AB(G, operA, operB) + delta_HA_t0(F[i], operA), H_B, rho0, tlist,
+            [D_A(N_B[i], GAMMA[1], operA),
+             D_AD(N_B[i], GAMMA[1], operA)], W_0, FILENAME[i])
 
 
 def two_qubits():
@@ -113,7 +122,7 @@ def two_qubits():
     # Define the initial state
     rho0 = qt.tensor(qt.fock_dm(2, 1), qt.fock_dm(2, 1))
     # Define the times to integrate at, remember that we need at least 10^-3 precision
-    tlist = np.linspace(0, G*100, 10000)
+    tlist = np.linspace(0, G * 100, 10000)
 
     F = [0.05 * W_0, 0.2 * W_0, W_0]
     N_B = 0.
@@ -121,21 +130,31 @@ def two_qubits():
     FILENAME = ["F_005_underdamped", "F_02_underdamped", "F_1_underdamped"]
 
     for i in range(3):
-        compute_energy_ergotropy(H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(F[i], sigma_am), H_B, rho0, tlist,
-                                 [D_A(N_B, GAMMA[0], sigma_am), D_AD(N_B, GAMMA[0], sigma_am)], W_0, FILENAME[i])
+        compute_energy_ergotropy(
+            H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(F[i], sigma_am), H_B,
+            rho0, tlist,
+            [D_A(N_B, GAMMA[0], sigma_am),
+             D_AD(N_B, GAMMA[0], sigma_am)], W_0, FILENAME[i])
 
     FILENAME = ["F_005_overdamped", "F_02_overdamped", "F_1_overdamped"]
 
     for i in range(3):
-        compute_energy_ergotropy(H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(F[i], sigma_am), H_B, rho0, tlist,
-                                 [D_A(N_B, GAMMA[1], sigma_am), D_AD(N_B, GAMMA[1], sigma_am)], W_0, FILENAME[i])
+        compute_energy_ergotropy(
+            H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(F[i], sigma_am), H_B,
+            rho0, tlist,
+            [D_A(N_B, GAMMA[1], sigma_am),
+             D_AD(N_B, GAMMA[1], sigma_am)], W_0, FILENAME[i])
 
     N_B = [0.1, 0.5, 1]
     FILENAME = ["N_B_01_overdamped", "N_B_05_overdamped", "N_B_1_overdamped"]
 
     for i in range(3):
-        compute_energy_ergotropy(H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(G, sigma_am), H_B, rho0, tlist,
-                                 [D_A(N_B[i], GAMMA[1], sigma_am), D_AD(N_B[i], GAMMA[1], sigma_am)], W_0, FILENAME[i])
+        compute_energy_ergotropy(
+            H_AB(G, sigma_am, sigma_bm) + delta_HA_t0(G, sigma_am), H_B, rho0,
+            tlist, [
+                D_A(N_B[i], GAMMA[1], sigma_am),
+                D_AD(N_B[i], GAMMA[1], sigma_am)
+            ], W_0, FILENAME[i])
 
 
 def main():
