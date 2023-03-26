@@ -7,8 +7,5 @@ The goal is to categorize which kind of states and Hamiltonians are better suite
 Eventually my final thesis will be also uploaded as we continue to work on these topics.
 
 # TODO
-- [x] Check ergotropy function, I suspect it is not correct
-- [x] Check if analitical ergotropy and energy for T = 0 matches
-- [x] Compare the two qubit case
-- [x] Change plots axes to match the article
-- [x] Probably there is something wrong in the calculation somewhere, debug!!
+- [ ] fix g_u_gaussian!!
+- [ ] write script to obtain Kiilerich-Molmer results
