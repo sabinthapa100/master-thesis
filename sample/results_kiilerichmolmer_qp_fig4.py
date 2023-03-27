@@ -27,10 +27,8 @@ def g_u_stimulated_emission(_t, _args):
 
 def g_v_stimulated_emission(_t, _args):
     _GAMMA = _args['GAMMA']
-    # print(_t)
-    # print(np.heaviside(_t, 1))
-    # print(math.exp(_GAMMA * _t))
-    # print(math.exp(_GAMMA * _t) - 1)
+    if math.exp(_GAMMA * _t):
+        return 0
     return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
                                            (math.exp(_GAMMA * _t) - 1))
 
@@ -148,14 +146,16 @@ def scattering_stimulated_emission():
     # Constants of the simulation
     W_0 = 1.
     gamma = 1.
-    N_DIMS = 2
+    N_U = 2
+    N_S = 2
+    N_V = 3
     # Operators
-    operAu = qt.tensor(qt.destroy(N_DIMS), qt.qeye(N_DIMS), qt.qeye(N_DIMS))
-    operAv = qt.tensor(qt.qeye(N_DIMS), qt.qeye(N_DIMS), qt.destroy(N_DIMS))
-    operC = qt.tensor(qt.qeye(N_DIMS), qt.destroy(N_DIMS), qt.qeye(N_DIMS))
+    operAu = qt.tensor(qt.destroy(N_U), qt.qeye(N_S), qt.qeye(N_V))
+    operAv = qt.tensor(qt.qeye(N_U), qt.qeye(N_S), qt.destroy(N_V))
+    operC = qt.tensor(qt.qeye(N_U), qt.sigmam(), qt.qeye(N_V))
     # Initial state
-    rho0 = qt.tensor(qt.fock_dm(N_DIMS, 1), qt.fock_dm(N_DIMS, 1),
-                     qt.fock_dm(N_DIMS, 0))
+    rho0 = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 1),
+                     qt.fock_dm(N_V, 0))
     # times to integrate the me at
     tlist = np.linspace(0, 4, 10000)
     # Run the simulation
