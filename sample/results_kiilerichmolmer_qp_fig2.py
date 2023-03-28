@@ -21,12 +21,12 @@ import math
 import scipy as sp
 
 
-def gaussian(_t, _mu=0., _sigma=1.):
+def gaussian_sqrt(_t, _mu=0., _sigma=1.):
     """
     Returns the gaussian function, which is our pulse shape
     """
     x = float(_t - _mu) / _sigma
-    return math.exp(-x * x / 2.) / math.sqrt(2 * np.pi) / _sigma
+    return math.sqrt(math.exp(-x * x / 2.) / math.sqrt(2 * np.pi) / _sigma)
 
 
 def g_u_gaussian(_t, _args):
@@ -35,10 +35,11 @@ def g_u_gaussian(_t, _args):
     """
     mu = _args['mu']
     sigma = _args['sigma']
-    denominator = np.sqrt(1 - 1 / (4 * np.sqrt(np.pi) * sigma) *
-                          (sp.special.erf(
-                              (_t - mu) / sigma) + sp.special.erf(mu / sigma)))
-    return np.conj(gaussian(_t, mu, sigma)) / denominator
+    x = (_t - mu) / (math.sqrt(2) * sigma)
+    denominator = np.sqrt(1 - 0.5 * (1 + sp.special.erf(x)))
+    # if denominator < 1e-7:
+    #     return 0
+    return gaussian_sqrt(_t, mu, sigma) / denominator
 
 
 def oscillator_H(_oper, _w_0=1.):
@@ -63,7 +64,7 @@ def conj_only_input_inter_H(_operA, _operC, _gamma=1.):
     return -1j * math.sqrt(np.conj(_gamma)) / 2. * _operA * _operC.dag()
 
 
-def total_H_t(_operA, _operC, _w_0=1., _gamma=1.):
+def total_H_t(_operA, _operC, _w_0=1., _gamma=1., _args={'mu': 1, 'sigma': 1}):
     """
     Returns the QobjEvo with the right time dependencies
     """
@@ -72,10 +73,7 @@ def total_H_t(_operA, _operC, _w_0=1., _gamma=1.):
         [only_input_inter_H(_operA, _operC, _gamma), g_u_gaussian],
         [conj_only_input_inter_H(_operA, _operC, _gamma), g_u_gaussian]
     ],
-                      args={
-                          'mu': 4,
-                          'sigma': 1
-                      })
+                      args=_args)
 
 
 def damping_oper(_operC, _gamma=1.):
@@ -85,15 +83,18 @@ def damping_oper(_operC, _gamma=1.):
     return np.sqrt(_gamma) * _operC
 
 
-def total_damping_oper_t(_operA, _operC, _gamma=1.):
+def total_damping_oper_t(_operA,
+                         _operC,
+                         _gamma=1.,
+                         _args={
+                             'mu': 1,
+                             'sigma': 1
+                         }):
     """
     Returns the complete damping operator, with the time dependent part
     """
     return qt.QobjEvo([damping_oper(_operC, _gamma), [_operA, g_u_gaussian]],
-                      args={
-                          'mu': 4,
-                          'sigma': 1
-                      })
+                      args=_args)
 
 
 def scattering_gaussian_mode():
@@ -101,27 +102,25 @@ def scattering_gaussian_mode():
     Runs the simulation for the scattering of a Gaussian pulse with single photon on an empy cavity
     """
     # Constants of the simulation
-    W_0 = 1.
+    W_0 = 0.2
     GAMMA = 1.
     N_DIMS = 2
+    MU = 4
+    SIGMA = 1
+    ARGS = {'mu': MU, 'sigma': SIGMA}
     # Operators
     operA = qt.tensor(qt.destroy(N_DIMS), qt.qeye(N_DIMS))
     operC = qt.tensor(qt.qeye(N_DIMS), qt.destroy(N_DIMS))
     # Initial state, sigle photon in the pulse
     rho0 = qt.tensor(qt.fock_dm(N_DIMS, 1), qt.fock_dm(N_DIMS, 0))
     # Define the times to integrate at
-    tlist = np.linspace(0, 12, 10000)
+    tlist = np.linspace(0, MU + 4 * SIGMA, 10000)
     # Run the simulation
     result = qt.mesolve(
-        total_H_t(operA, operC, W_0, GAMMA),
-        rho0,
-        tlist,
-        qt.lindblad_dissipator(total_damping_oper_t(operA, operC, GAMMA)),
-        [operA.dag() * operA, operC.dag() * operC],
-        args={
-            'mu': 4,
-            'sigma': 1
-        })
+        total_H_t(operA, operC, W_0, GAMMA, ARGS), rho0, tlist,
+        qt.lindblad_dissipator(total_damping_oper_t(operA, operC, GAMMA,
+                                                    ARGS)),
+        [operA.dag() * operA, operC.dag() * operC])
 
     # Write the expectation values to file
     with open('./outputs/results_kiilerichmolmer_qp/adaga_expect_values.dat',
