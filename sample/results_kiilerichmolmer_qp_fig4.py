@@ -38,11 +38,11 @@ def g_u_v_stimulated_emission(_t, _args):
         _t, _args)
 
 
-def oscillator_H(_oper, _w_0=1.):
+def qubit_H(_oper, _w_0=1.):
     """
     Returns the hamiltonian of an harmonic oscillator 
     """
-    return _w_0 * _oper.dag() * _oper
+    return _w_0 * 0.5 * (_oper + 1)
 
 
 def only_input_inter_H(_operAu, _operC, _gamma=1.):
@@ -89,12 +89,19 @@ def conj_input_output_inter_H(_operAu, _operAv, _gamma=1.):
     return -1j * 0.5 * _operAu * _operAv.dag()
 
 
-def total_H_t(_operAu, _operAv, _operC, _w_0=1., _gamma=1.):
+def total_H_t(_operAu,
+              _operAv,
+              _operC,
+              _w_0=1.,
+              _gamma=1.,
+              _args={
+                  'GAMMA': 1,
+              }):
     """
     Returns the QobjEvo with the right time dependencies
     """
     return qt.QobjEvo([
-        oscillator_H(_operC, _w_0),
+        qubit_H(_operC, _w_0),
         [only_input_inter_H(_operAu, _operC, _gamma), g_u_stimulated_emission],
         [
             only_output_inter_H(_operAv, _operC, _gamma),
@@ -117,7 +124,7 @@ def total_H_t(_operAu, _operAv, _operC, _w_0=1., _gamma=1.):
             g_u_v_stimulated_emission
         ]
     ],
-                      args={'GAMMA': _gamma / 0.36})
+                      args=_args)
 
 
 def damping_oper(_operC, _gamma=1.):
@@ -127,7 +134,13 @@ def damping_oper(_operC, _gamma=1.):
     return np.sqrt(_gamma) * _operC
 
 
-def total_damping_oper_t(_operAu, _operAv, _operC, _gamma=1.):
+def total_damping_oper_t(_operAu,
+                         _operAv,
+                         _operC,
+                         _gamma=1.,
+                         _args={
+                             'GAMMA': 1,
+                         }):
     """
     Returns the complete damping operator, with the time dependent part
     """
@@ -135,17 +148,18 @@ def total_damping_oper_t(_operAu, _operAv, _operC, _gamma=1.):
         damping_oper(_operC, _gamma), [_operAu, g_u_stimulated_emission],
         [_operAv, g_v_stimulated_emission]
     ],
-                      args={'GAMMA': _gamma / 0.36})
+                      args=_args)
 
 
 def scattering_stimulated_emission():
     """
     Runs the simulation for the stimulated emission
     """
-    # print("pippo")
     # Constants of the simulation
-    W_0 = 1.
+    W_0 = 0.2
     gamma = 1.
+    GAMMA = float(gamma) / 0.36
+    ARGS = {'GAMMA': GAMMA}
     N_U = 2
     N_S = 2
     N_V = 3
@@ -154,40 +168,52 @@ def scattering_stimulated_emission():
     operAv = qt.tensor(qt.qeye(N_U), qt.qeye(N_S), qt.destroy(N_V))
     operC = qt.tensor(qt.qeye(N_U), qt.sigmam(), qt.qeye(N_V))
     # Initial state
-    rho0 = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 1),
+    rho0 = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 0),
                      qt.fock_dm(N_V, 0))
     # times to integrate the me at
     tlist = np.linspace(0, 4, 10000)
     # Run the simulation
     result = qt.mesolve(
-        total_H_t(operAu, operAv, operC, W_0, gamma),
-        rho0,
-        tlist,
+        total_H_t(operAu, operAv, operC, W_0, gamma, ARGS), rho0, tlist,
         qt.lindblad_dissipator(
-            total_damping_oper_t(operAu, operAv, operC, gamma)),
-        [operAu.dag() * operAu,
-         operC.dag() * operC,
-         operAv.dag() * operAv],
-        args={'GAMMA': gamma / 0.36})
+            total_damping_oper_t(operAu, operAv, operC, gamma, ARGS)))
 
     # Write the expectation values to file
-    with open(
-            './outputs/results_kiilerichmolmer_qp_fig4/audagau_expect_values.dat',
-            'w') as f:
-        for i in range(len(result.expect[0])):
-            f.write(str(result.expect[0][i]) + '\n')
+    with open('./outputs/results_kiilerichmolmer_qp_fig4/input_one_photon.dat',
+              'w') as f:
+        input_pulse_state = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 1),
+                                      qt.fock_dm(N_V, 0))
+        for i in range(len(result.states)):
+            prob = np.abs(result.states[i].overlap(input_pulse_state))**2
+            f.write(str(prob) + '\n')
+
+    with open('./outputs/results_kiilerichmolmer_qp_fig4/excited_atom.dat',
+              'w') as f:
+        excited_atom_state = qt.tensor(qt.fock_dm(N_U, 0), qt.fock_dm(N_S, 0),
+                                       qt.fock_dm(N_V, 0))
+        for i in range(len(result.states)):
+            prob = np.abs(result.states[i].overlap(excited_atom_state))**2
+            f.write(str(prob) + '\n')
 
     with open(
-            './outputs/results_kiilerichmolmer_qp_fig4/cdagc_expect_values.dat',
+            './outputs/results_kiilerichmolmer_qp_fig4/output_one_photon.dat',
             'w') as f:
-        for i in range(len(result.expect[1])):
-            f.write(str(result.expect[1][i]) + '\n')
+        output_pulse_state_one = qt.tensor(qt.fock_dm(N_U, 0),
+                                           qt.fock_dm(N_S, 1),
+                                           qt.fock_dm(N_V, 1))
+        for i in range(len(result.states)):
+            prob = np.abs(result.states[i].overlap(output_pulse_state_one))**2
+            f.write(str(prob) + '\n')
 
     with open(
-            './outputs/results_kiilerichmolmer_qp_fig4/avdagav_expect_values.dat',
+            './outputs/results_kiilerichmolmer_qp_fig4/output_two_photon.dat',
             'w') as f:
-        for i in range(len(result.expect[2])):
-            f.write(str(result.expect[2][i]) + '\n')
+        output_pulse_state_two = qt.tensor(qt.fock_dm(N_U, 0),
+                                           qt.fock_dm(N_S, 1),
+                                           qt.fock_dm(N_V, 2))
+        for i in range(len(result.states)):
+            prob = np.abs(result.states[i].overlap(output_pulse_state_two))**2
+            f.write(str(prob) + '\n')
 
 
 def main():
