@@ -7,5 +7,5 @@ The goal is to categorize which kind of states and Hamiltonians are better suite
 Eventually my final thesis will be also uploaded as we continue to work on these topics.
 
 # TODO
-- [ ] fix g_u_gaussian!!
-- [ ] write script to obtain Kiilerich-Molmer results
+- [x] fix g_u_gaussian!!
+- [x] write script to obtain Kiilerich-Molmer results
