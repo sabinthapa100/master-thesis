@@ -27,8 +27,7 @@ def g_u_stimulated_emission(_t, _args):
 
 def g_v_stimulated_emission(_t, _args):
     _GAMMA = _args['GAMMA']
-    _eps = 2.
-    if _t > _eps:
+    if _t > 0:
         return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
                                                (math.exp(_GAMMA * _t) - 1))
     else:
@@ -110,7 +109,7 @@ def total_H_t(_operAu,
             g_v_stimulated_emission
         ],
         [
-            input_output_inter_H(_operAv, _operAu, _gamma),
+            input_output_inter_H(_operAu, _operAv, _gamma),
             g_u_v_stimulated_emission
         ],
         [
@@ -122,7 +121,7 @@ def total_H_t(_operAu,
             g_v_stimulated_emission
         ],
         [
-            conj_input_output_inter_H(_operAv, _operAu, _gamma),
+            conj_input_output_inter_H(_operAu, _operAv, _gamma),
             g_u_v_stimulated_emission
         ]
     ],
@@ -158,7 +157,7 @@ def scattering_stimulated_emission():
     Runs the simulation for the stimulated emission
     """
     # Constants of the simulation
-    W_0 = 1.
+    W_0 = 0.2
     gamma = 1.
     GAMMA = float(gamma) / 0.36
     ARGS = {'GAMMA': GAMMA}
