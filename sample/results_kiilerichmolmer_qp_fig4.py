@@ -22,15 +22,17 @@ import math
 
 def g_u_stimulated_emission(_t, _args):
     _GAMMA = _args['GAMMA']
-    return math.sqrt(_GAMMA) * np.heaviside(_t, 0)
+    return math.sqrt(_GAMMA) * np.heaviside(_t, 1)
 
 
 def g_v_stimulated_emission(_t, _args):
     _GAMMA = _args['GAMMA']
-    if math.exp(_GAMMA * _t):
+    _eps = 2.
+    if _t > _eps:
+        return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
+                                               (math.exp(_GAMMA * _t) - 1))
+    else:
         return 0
-    return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
-                                           (math.exp(_GAMMA * _t) - 1))
 
 
 def g_u_v_stimulated_emission(_t, _args):
@@ -38,11 +40,11 @@ def g_u_v_stimulated_emission(_t, _args):
         _t, _args)
 
 
-def qubit_H(_oper, _w_0=1.):
+def qubit_H(_w_0=1.):
     """
-    Returns the hamiltonian of an harmonic oscillator 
+    Returns the hamiltonian of a two level atom
     """
-    return _w_0 * 0.5 * (_oper + 1)
+    return _w_0 * 0.5 * (qt.tensor(qt.qeye(2), qt.sigmaz(), qt.qeye(3)) + 1)
 
 
 def only_input_inter_H(_operAu, _operC, _gamma=1.):
@@ -101,7 +103,7 @@ def total_H_t(_operAu,
     Returns the QobjEvo with the right time dependencies
     """
     return qt.QobjEvo([
-        qubit_H(_operC, _w_0),
+        qubit_H(_w_0),
         [only_input_inter_H(_operAu, _operC, _gamma), g_u_stimulated_emission],
         [
             only_output_inter_H(_operAv, _operC, _gamma),
@@ -156,7 +158,7 @@ def scattering_stimulated_emission():
     Runs the simulation for the stimulated emission
     """
     # Constants of the simulation
-    W_0 = 0.2
+    W_0 = 1.
     gamma = 1.
     GAMMA = float(gamma) / 0.36
     ARGS = {'GAMMA': GAMMA}
@@ -168,8 +170,7 @@ def scattering_stimulated_emission():
     operAv = qt.tensor(qt.qeye(N_U), qt.qeye(N_S), qt.destroy(N_V))
     operC = qt.tensor(qt.qeye(N_U), qt.sigmam(), qt.qeye(N_V))
     # Initial state
-    rho0 = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 0),
-                     qt.fock_dm(N_V, 0))
+    rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 0), qt.basis(N_V, 0))
     # times to integrate the me at
     tlist = np.linspace(0, 4, 10000)
     # Run the simulation
@@ -181,38 +182,36 @@ def scattering_stimulated_emission():
     # Write the expectation values to file
     with open('./outputs/results_kiilerichmolmer_qp_fig4/input_one_photon.dat',
               'w') as f:
-        input_pulse_state = qt.tensor(qt.fock_dm(N_U, 1), qt.fock_dm(N_S, 1),
-                                      qt.fock_dm(N_V, 0))
+        input_pulse_state = qt.basis(N_U, 1)
         for i in range(len(result.states)):
-            prob = np.abs(result.states[i].overlap(input_pulse_state))**2
+            prob = np.abs(
+                result.states[i].ptrace(0).overlap(input_pulse_state))**2
             f.write(str(prob) + '\n')
 
     with open('./outputs/results_kiilerichmolmer_qp_fig4/excited_atom.dat',
               'w') as f:
-        excited_atom_state = qt.tensor(qt.fock_dm(N_U, 0), qt.fock_dm(N_S, 0),
-                                       qt.fock_dm(N_V, 0))
+        excited_atom_state = qt.basis(N_S, 0)
         for i in range(len(result.states)):
-            prob = np.abs(result.states[i].overlap(excited_atom_state))**2
+            prob = np.abs(
+                result.states[i].ptrace(1).overlap(excited_atom_state))**2
             f.write(str(prob) + '\n')
 
     with open(
             './outputs/results_kiilerichmolmer_qp_fig4/output_one_photon.dat',
             'w') as f:
-        output_pulse_state_one = qt.tensor(qt.fock_dm(N_U, 0),
-                                           qt.fock_dm(N_S, 1),
-                                           qt.fock_dm(N_V, 1))
+        output_pulse_state_one = qt.basis(N_V, 1)
         for i in range(len(result.states)):
-            prob = np.abs(result.states[i].overlap(output_pulse_state_one))**2
+            prob = np.abs(
+                result.states[i].ptrace(2).overlap(output_pulse_state_one))**2
             f.write(str(prob) + '\n')
 
     with open(
             './outputs/results_kiilerichmolmer_qp_fig4/output_two_photon.dat',
             'w') as f:
-        output_pulse_state_two = qt.tensor(qt.fock_dm(N_U, 0),
-                                           qt.fock_dm(N_S, 1),
-                                           qt.fock_dm(N_V, 2))
+        output_pulse_state_two = qt.basis(N_V, 2)
         for i in range(len(result.states)):
-            prob = np.abs(result.states[i].overlap(output_pulse_state_two))**2
+            prob = np.abs(
+                result.states[i].ptrace(2).overlap(output_pulse_state_two))**2
             f.write(str(prob) + '\n')
 
 
