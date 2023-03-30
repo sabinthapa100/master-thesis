@@ -41,7 +41,9 @@ def g_u_v_stimulated_emission(_t, _args):
 
 def qubit_H(_w_0=1.):
     """
-    Returns the hamiltonian of a two level atom
+    This function is ill-defined, TODO: implement it better!!
+    Returns the hamiltonian of a two level atom, with two ancillary system of
+    dimension 2 and 3
     """
     return _w_0 * 0.5 * (qt.tensor(qt.qeye(2), qt.sigmaz(), qt.qeye(3)) + 1)
 
@@ -157,7 +159,12 @@ def scattering_stimulated_emission():
     Runs the simulation for the stimulated emission
     """
     # Constants of the simulation
-    W_0 = 0.2
+
+    # The Halmitonian in the master equation is in the interaction representation w.r.t H_S (system hamiltonian)
+    # this means that H_S plays no role in the dymanic, and the easiest way to not have its contribution, is to
+    # take W_0 = 0 BEWARE: this has no real physical meaning, it is just a shortcut to not rewrite several lines of code
+    W_0 = 0.
+
     gamma = 1.
     GAMMA = float(gamma) / 0.36
     ARGS = {'GAMMA': GAMMA}

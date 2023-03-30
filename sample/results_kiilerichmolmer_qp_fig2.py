@@ -37,8 +37,6 @@ def g_u_gaussian(_t, _args):
     sigma = _args['sigma']
     x = (_t - mu) / (math.sqrt(2) * sigma)
     denominator = np.sqrt(1 - 0.5 * (1 + sp.special.erf(x)))
-    # if denominator < 1e-7:
-    #     return 0
     return gaussian_sqrt(_t, mu, sigma) / denominator
 
 
@@ -102,7 +100,12 @@ def scattering_gaussian_mode():
     Runs the simulation for the scattering of a Gaussian pulse with single photon on an empy cavity
     """
     # Constants of the simulation
-    W_0 = 0.2
+
+    # The Halmitonian in the master equation is in the interaction representation w.r.t H_S (system hamiltonian)
+    # this means that H_S plays no role in the dymanic, and the easiest way to not have its contribution, is to
+    # take W_0 = 0 BEWARE: this has no real physical meaning, it is just a shortcut to not rewrite several lines of code
+    W_0 = 0.
+
     GAMMA = 1.
     N_DIMS = 2
     MU = 4
