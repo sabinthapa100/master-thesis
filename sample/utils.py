@@ -15,16 +15,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import math
 import qutip as qt
 
 
+def energy(_H, _rho):
+    """
+    Wrapper around qt.expect()
+    """
+    return qt.expec(_H, _rho)
+
+
 def ergotropy(_H, _rho):
-    """ 
+    """
     Function that calculates the ergotropy of state `_rho` on an Hamiltonian `_H`
     """
 
     # First, we calculate the energy expectation value
-    _energy = qt.expect(_H, _rho)
+    _energy = energy(_H, _rho)
     # Then, compute the eigenvalues and sort them in the wanted order
     _rho_eigenvalues = _rho.eigenenergies(sort='high')
     _H_eigenvalues = _H.eigenenergies(sort='low')
@@ -35,3 +43,33 @@ def ergotropy(_H, _rho):
         _energy_passive += _rho_eigenvalues[i] * _H_eigenvalues[i]
 
     return _energy - _energy_passive
+
+
+def oscillator_H():
+    pass
+
+
+def qubit_H():
+    pass
+
+
+def damping_oper(*_operators, _gamma=1.):
+    """
+    Returns the damping operator sqrt(_gamma)*oper
+    """
+    if not _operators:
+        raise TypeError("Requires at least one input argument")
+    if len(_operators) == 1 and isinstance(_operators[0], qt.Qobj):
+        # this is the case when damping_oper is called on the form:
+        # damping_oper([q1, q2, q3, ...])
+        return math.sqrt(_gamma) * _operators[0]
+    else:
+        # this is the case when damping_oper  is called on the form:
+        # damping_oper (q1, q2, q3, ...)
+        oper_list = _operators
+    if len(oper_list) != 1:
+        raise TypeError("Requires exactly one operator")
+    if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
+        # raise error if one of the inputs is not a quantum object
+        raise TypeError("The input is not a quantum object")
+    return math.sqrt(_gamma) * oper_list[0]
