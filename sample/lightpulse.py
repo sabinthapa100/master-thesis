@@ -75,7 +75,7 @@ def g_v_exponential(_t, _args):
     Exponential time dependent coupling with the output cavity
     """
     _GAMMA = _args['GAMMA']
-    if _t > 0.0004:
+    if _t > 0.:
         return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
                                                (math.exp(_GAMMA * _t) - 1))
     else:
@@ -281,7 +281,7 @@ def exponential_total_damping_oper_t(*_operators,
         oper_list = _operators
     if len(oper_list) != 3:
         raise TypeError(
-            "Requires exactly three operators, one for the input cavity, one for the sysytem"
+            "Requires exactly three operators, one for the input cavity, one for the system"
             "and the other for the output cavity")
     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
         # raise error if one of the inputs is not a quantum object
