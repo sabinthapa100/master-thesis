@@ -75,8 +75,8 @@ def g_v_exponential(_t, _args):
     Exponential time dependent coupling with the output cavity
     """
     _GAMMA = _args['GAMMA']
-    if _t > 0:
-        return np.heaviside(_t, 1) * math.sqrt(_GAMMA /
+    if _t > 0.0004:
+        return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
                                                (math.exp(_GAMMA * _t) - 1))
     else:
         return 0
@@ -98,6 +98,7 @@ def only_input_inter_H(*_operators, _gamma=1.):
     """
     Calculates the interaction Hamiltonian, with only the input pulse
     """
+
     if not _operators:
         raise TypeError("Requires at least one input argument")
     if len(_operators) == 1 and isinstance(_operators[0], (list, np.ndarray)):
@@ -108,15 +109,17 @@ def only_input_inter_H(*_operators, _gamma=1.):
         # this is the case when only_input_inter_H is called on the form:
         # only_input_inter_H(q1, q2, q3, ...)
         oper_list = _operators
-    if len(oper_list) != 2:
-        raise TypeError(
-            "Requires exactly two operators, one for the input cavity and the other for the system"
-        )
     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
-
-    return math.sqrt(_gamma) * oper_list[0].dag() * oper_list[1]
+    if len(oper_list) == 2:
+        return math.sqrt(_gamma) * oper_list[0].dag() * oper_list[1]
+    elif len(oper_list) == 3:
+        return math.sqrt(_gamma) * oper_list[0].dag() * oper_list[1]
+    else:
+        raise TypeError(
+            "Requires either two or three operators, one for the input cavity and the other for the system"
+        )
 
 
 def only_output_inter_H(*_operators, _gamma=1.):
@@ -133,15 +136,17 @@ def only_output_inter_H(*_operators, _gamma=1.):
         # this is the case when only_input_inter_H is called on the form:
         # only_output_inter_H(q1, q2, q3, ...)
         oper_list = _operators
-    if len(oper_list) != 2:
-        raise TypeError(
-            "Requires exactly two operators, one for the system and the other for the output cavity"
-        )
     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
-
-    return math.sqrt(np.conj(_gamma)) * oper_list[0].dag() * oper_list[1]
+    if len(oper_list) == 2:
+        return math.sqrt(np.conj(_gamma)) * oper_list[0].dag() * oper_list[1]
+    elif len(oper_list) == 3:
+        return math.sqrt(np.conj(_gamma)) * oper_list[1].dag() * oper_list[2]
+    else:
+        raise TypeError(
+            "Requires either two or three operators, one for the system and the other for the output cavity"
+        )
 
 
 def input_output_inter_H(*_operators, _gamma=1.):
@@ -158,92 +163,18 @@ def input_output_inter_H(*_operators, _gamma=1.):
         # this is the case when input_output_inter_H is called on the form:
         # input_output_inter_H(q1, q2, q3, ...)
         oper_list = _operators
-    if len(oper_list) != 2:
-        raise TypeError(
-            "Requires exactly two operators, one for the input cavity and the other for the output cavity"
-        )
     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
+    if len(oper_list) == 2:
+        return oper_list[0].dag() * oper_list[1]
+    elif len(oper_list) == 3:
+        return oper_list[0].dag() * oper_list[2]
+    else:
+        raise TypeError(
+            "Requires either two or three operators, one for the input cavity and the other for the output cavity"
+        )
 
-    return oper_list[0].dag() * oper_list[1]
-
-
-# def conj_only_input_inter_H(*_operators, _gamma=1.):
-#     """
-#     Calculates the conjucate of the interaction Hamiltonian, with only the input pulse
-#     They are separate because in principle the have two different time dependencies
-#     """
-#     if not _operators:
-#         raise TypeError("Requires at least one input argument")
-#     if len(_operators) == 1 and isinstance(_operators[0], (list, np.ndarray)):
-#         # this is the case when conj_only_input_inter_H is called on the form:
-#         # conj_only_input_inter_H([q1, q2, q3, ...])
-#         oper_list = _operators[0]
-#     else:
-#         # this is the case when conj_only_input_inter_H is called on the form:
-#         # conj_only_input_inter_H(q1, q2, q3, ...)
-#         oper_list = _operators
-#     if len(oper_list) != 2:
-#         raise TypeError(
-#             "Requires exactly two operators, one for the input cavity and the other for the system"
-#         )
-#     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
-#         # raise error if one of the inputs is not a quantum object
-#         raise TypeError("One of inputs is not a quantum object")
-#
-#     return math.sqrt(np.conj(_gamma)) * oper_list[0] * oper_list[1].dag()
-#
-#
-# def conj_only_output_inter_H(*_operators, _gamma=1.):
-#     """
-#     Calculates the conjucate of the interaction Hamiltonian, with only the output pulse
-#     They are separate because in principle the have two different time dependencies
-#     """
-#     if not _operators:
-#         raise TypeError("Requires at least one input argument")
-#     if len(_operators) == 1 and isinstance(_operators[0], (list, np.ndarray)):
-#         # this is the case when conj_only_output_inter_H is called on the form:
-#         # conj_only_output_inter_H([q1, q2, q3, ...])
-#         oper_list = _operators[0]
-#     else:
-#         # this is the case when conj_only_output_inter_H is called on the form:
-#         # conj_only_output_inter_H(q1, q2, q3, ...)
-#         oper_list = _operators
-#     if len(oper_list) != 2:
-#         raise TypeError(
-#             "Requires exactly two operators, one for the system and the other for the output cavity"
-#         )
-#     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
-#         # raise error if one of the inputs is not a quantum object
-#         raise TypeError("One of inputs is not a quantum object")
-#
-#     return math.sqrt(_gamma) * oper_list[0] * oper_list[1].dag()
-#
-#
-# def conj_input_output_inter_H(*_operators, _gamma=1.):
-#     """
-#     Calculates the conjucate interaction Hamiltonian between the two pulses
-#     """
-#     if not _operators:
-#         raise TypeError("Requires at least one input argument")
-#     if len(_operators) == 1 and isinstance(_operators[0], (list, np.ndarray)):
-#         # this is the case when conj_input_output_inter_H is called on the form:
-#         # conj_input_output_inter_H ([q1, q2, q3, ...])
-#         oper_list = _operators[0]
-#     else:
-#         # this is the case when conj_input_output_inter_H  is called on the form:
-#         # conj_input_output_inter_H (q1, q2, q3, ...)
-#         oper_list = _operators
-#     if len(oper_list) != 2:
-#         raise TypeError(
-#             "Requires exactly two operators, one for the input cavity and the other for the output cavity"
-#         )
-#     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
-#         # raise error if one of the inputs is not a quantum object
-#         raise TypeError("One of inputs is not a quantum object")
-#
-#     return oper_list[0] * oper_list[1].dag()
 
 #################
 # Special cases #
@@ -258,10 +189,12 @@ def gaussian_total_H_t(*_operators, _gamma=1., _args={'mu': 1., 'sigma': 1.}):
     """
     Returns the total interaction Hamiltonian in the case of Gaussian pulses
     """
-    return 0.5 * 1j * qt.QobjEvo(
-        [[only_input_inter_H(_operators, _gamma), g_u_gaussian],
-         [-1 * only_input_inter_H(_operators, _gamma).dag(), g_u_gaussian]],
-        args=_args)
+    return 0.5 * 1j * qt.QobjEvo([[
+        only_input_inter_H(*_operators, _gamma=_gamma), g_u_gaussian
+    ], [
+        -1 * only_input_inter_H(*_operators, _gamma=_gamma).dag(), g_u_gaussian
+    ]],
+                                 args=_args)
 
 
 def gaussian_total_damping_oper_t(*_operators,
@@ -291,7 +224,8 @@ def gaussian_total_damping_oper_t(*_operators,
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
     return qt.QobjEvo([
-        utils.damping_oper(oper_list[1], _gamma), [oper_list[0], g_u_gaussian]
+        utils.damping_oper(oper_list[1], _gamma=_gamma),
+        [oper_list[0], g_u_gaussian]
     ],
                       args=_args)
 
@@ -310,13 +244,19 @@ def exponential_total_H_t(*_operators, _gamma=1., _args={'GAMMA': 1.}):
     Returns the total interaction Hamiltonian in the case of exponential pulses
     """
     return 0.5 * 1j * qt.QobjEvo(
-        [[only_input_inter_H(_operators, _gamma), g_u_exponential],
-         [only_output_inter_H(_operators, _gamma), g_v_exponential],
-         [input_output_inter_H(_operators, _gamma), g_u_v_exponential],
-         [-1 * only_input_inter_H(_operators, _gamma).dag(), g_u_exponential],
-         [-1 * only_output_inter_H(_operators, _gamma).dag(), g_v_exponential],
+        [[only_input_inter_H(*_operators, _gamma=_gamma), g_u_exponential],
+         [only_output_inter_H(*_operators, _gamma=_gamma), g_v_exponential],
+         [input_output_inter_H(*_operators, _gamma=_gamma), g_u_v_exponential],
          [
-             -1 * input_output_inter_H(_operators, _gamma).dag(),
+             -1 * only_input_inter_H(*_operators, _gamma=_gamma).dag(),
+             g_u_exponential
+         ],
+         [
+             -1 * only_output_inter_H(*_operators, _gamma=_gamma).dag(),
+             g_v_exponential
+         ],
+         [
+             -1 * input_output_inter_H(*_operators, _gamma=_gamma).dag(),
              g_u_v_exponential
          ]],
         args=_args)
@@ -347,7 +287,7 @@ def exponential_total_damping_oper_t(*_operators,
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
     return qt.QobjEvo([
-        utils.damping_oper(oper_list[1], _gamma),
+        utils.damping_oper(oper_list[1], _gamma=_gamma),
         [oper_list[0], g_u_exponential], [oper_list[2], g_v_exponential]
     ],
                       args=_args)
