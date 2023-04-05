@@ -18,140 +18,141 @@
 import numpy as np
 import qutip as qt
 import math
+import lightpulse as lp
 
-
-def g_u_stimulated_emission(_t, _args):
-    _GAMMA = _args['GAMMA']
-    return math.sqrt(_GAMMA) * np.heaviside(_t, 1)
-
-
-def g_v_stimulated_emission(_t, _args):
-    _GAMMA = _args['GAMMA']
-    if _t > 0:
-        return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
-                                               (math.exp(_GAMMA * _t) - 1))
-    else:
-        return 0
-
-
-def g_u_v_stimulated_emission(_t, _args):
-    return g_u_stimulated_emission(_t, _args) * g_v_stimulated_emission(
-        _t, _args)
-
-
-def qubit_H(_w_0=1.):
-    """
-    This function is ill-defined, TODO: implement it better!!
-    Returns the hamiltonian of a two level atom, with two ancillary system of
-    dimension 2 and 3
-    """
-    return _w_0 * 0.5 * (qt.tensor(qt.qeye(2), qt.sigmaz(), qt.qeye(3)) + 1)
-
-
-def only_input_inter_H(_operAu, _operC, _gamma=1.):
-    """
-    Calculates the interaction Hamilotonian, with only the input pulse
-    """
-    return 1j * math.sqrt(_gamma) / 2. * _operAu.dag() * _operC
-
-
-def only_output_inter_H(_operAv, _operC, _gamma=1.):
-    """
-    Calculates the interaction Hamilotonian, with only the output pulse
-    """
-    return 1j * math.sqrt(np.conj(_gamma)) / 2. * _operC.dag() * _operAv
-
-
-def input_output_inter_H(_operAu, _operAv, _gamma=1.):
-    """
-    Calculates the interaction Hamilotonian between the two pulses
-    """
-    return 1j * 0.5 * _operAu.dag() * _operAv
-
-
-def conj_only_input_inter_H(_operAu, _operC, _gamma=1.):
-    """
-    Calculates the conjucate of the interaction Hamilotonian, with only the input pulse
-    They are separate because in principle the have two different time dependencies
-    """
-    return -1j * math.sqrt(np.conj(_gamma)) / 2. * _operAu * _operC.dag()
-
-
-def conj_only_output_inter_H(_operAv, _operC, _gamma=1.):
-    """
-    Calculates the conjucate of the interaction Hamilotonian, with only the output pulse
-    They are separate because in principle the have two different time dependencies
-    """
-    return -1j * math.sqrt(_gamma) / 2. * _operC * _operAv.dag()
-
-
-def conj_input_output_inter_H(_operAu, _operAv, _gamma=1.):
-    """
-    Calculates the conjucate interaction Hamilotonian between the two pulses
-    """
-    return -1j * 0.5 * _operAu * _operAv.dag()
-
-
-def total_H_t(_operAu,
-              _operAv,
-              _operC,
-              _w_0=1.,
-              _gamma=1.,
-              _args={
-                  'GAMMA': 1,
-              }):
-    """
-    Returns the QobjEvo with the right time dependencies
-    """
-    return qt.QobjEvo([
-        qubit_H(_w_0),
-        [only_input_inter_H(_operAu, _operC, _gamma), g_u_stimulated_emission],
-        [
-            only_output_inter_H(_operAv, _operC, _gamma),
-            g_v_stimulated_emission
-        ],
-        [
-            input_output_inter_H(_operAu, _operAv, _gamma),
-            g_u_v_stimulated_emission
-        ],
-        [
-            conj_only_input_inter_H(_operAu, _operC, _gamma),
-            g_u_stimulated_emission
-        ],
-        [
-            conj_only_output_inter_H(_operAv, _operC, _gamma),
-            g_v_stimulated_emission
-        ],
-        [
-            conj_input_output_inter_H(_operAu, _operAv, _gamma),
-            g_u_v_stimulated_emission
-        ]
-    ],
-                      args=_args)
-
-
-def damping_oper(_operC, _gamma=1.):
-    """
-    Time independet damping operator
-    """
-    return np.sqrt(_gamma) * _operC
-
-
-def total_damping_oper_t(_operAu,
-                         _operAv,
-                         _operC,
-                         _gamma=1.,
-                         _args={
-                             'GAMMA': 1,
-                         }):
-    """
-    Returns the complete damping operator, with the time dependent part
-    """
-    return qt.QobjEvo([
-        damping_oper(_operC, _gamma), [_operAu, g_u_stimulated_emission],
-        [_operAv, g_v_stimulated_emission]
-    ],
-                      args=_args)
+# def g_u_stimulated_emission(_t, _args):
+#     _GAMMA = _args['GAMMA']
+#     return math.sqrt(_GAMMA) * np.heaviside(_t, 1)
+#
+#
+# def g_v_stimulated_emission(_t, _args):
+#     _GAMMA = _args['GAMMA']
+#     if _t > 0:
+#         return np.heaviside(_t, 0) * math.sqrt(_GAMMA /
+#                                                (math.exp(_GAMMA * _t) - 1))
+#     else:
+#         return 0
+#
+#
+# def g_u_v_stimulated_emission(_t, _args):
+#     return g_u_stimulated_emission(_t, _args) * g_v_stimulated_emission(
+#         _t, _args)
+#
+#
+# def qubit_H(_w_0=1.):
+#     """
+#     This function is ill-defined, TODO: implement it better!!
+#     Returns the hamiltonian of a two level atom, with two ancillary system of
+#     dimension 2 and 3
+#     """
+#     return _w_0 * 0.5 * (qt.tensor(qt.qeye(2), qt.sigmaz(), qt.qeye(3)) + 1)
+#
+#
+# def only_input_inter_H(_operAu, _operC, _gamma=1.):
+#     """
+#     Calculates the interaction Hamilotonian, with only the input pulse
+#     """
+#     return 1j * math.sqrt(_gamma) / 2. * _operAu.dag() * _operC
+#
+#
+# def only_output_inter_H(_operAv, _operC, _gamma=1.):
+#     """
+#     Calculates the interaction Hamilotonian, with only the output pulse
+#     """
+#     return 1j * math.sqrt(np.conj(_gamma)) / 2. * _operC.dag() * _operAv
+#
+#
+# def input_output_inter_H(_operAu, _operAv, _gamma=1.):
+#     """
+#     Calculates the interaction Hamilotonian between the two pulses
+#     """
+#     return 1j * 0.5 * _operAu.dag() * _operAv
+#
+#
+# def conj_only_input_inter_H(_operAu, _operC, _gamma=1.):
+#     """
+#     Calculates the conjucate of the interaction Hamilotonian, with only the input pulse
+#     They are separate because in principle the have two different time dependencies
+#     """
+#     return -1j * math.sqrt(np.conj(_gamma)) / 2. * _operAu * _operC.dag()
+#
+#
+# def conj_only_output_inter_H(_operAv, _operC, _gamma=1.):
+#     """
+#     Calculates the conjucate of the interaction Hamilotonian, with only the output pulse
+#     They are separate because in principle the have two different time dependencies
+#     """
+#     return -1j * math.sqrt(_gamma) / 2. * _operC * _operAv.dag()
+#
+#
+# def conj_input_output_inter_H(_operAu, _operAv, _gamma=1.):
+#     """
+#     Calculates the conjucate interaction Hamilotonian between the two pulses
+#     """
+#     return -1j * 0.5 * _operAu * _operAv.dag()
+#
+#
+# def total_H_t(_operAu,
+#               _operAv,
+#               _operC,
+#               _w_0=1.,
+#               _gamma=1.,
+#               _args={
+#                   'GAMMA': 1,
+#               }):
+#     """
+#     Returns the QobjEvo with the right time dependencies
+#     """
+#     return qt.QobjEvo([
+#         qubit_H(_w_0),
+#         [only_input_inter_H(_operAu, _operC, _gamma), g_u_stimulated_emission],
+#         [
+#             only_output_inter_H(_operAv, _operC, _gamma),
+#             g_v_stimulated_emission
+#         ],
+#         [
+#             input_output_inter_H(_operAu, _operAv, _gamma),
+#             g_u_v_stimulated_emission
+#         ],
+#         [
+#             conj_only_input_inter_H(_operAu, _operC, _gamma),
+#             g_u_stimulated_emission
+#         ],
+#         [
+#             conj_only_output_inter_H(_operAv, _operC, _gamma),
+#             g_v_stimulated_emission
+#         ],
+#         [
+#             conj_input_output_inter_H(_operAu, _operAv, _gamma),
+#             g_u_v_stimulated_emission
+#         ]
+#     ],
+#                       args=_args)
+#
+#
+# def damping_oper(_operC, _gamma=1.):
+#     """
+#     Time independet damping operator
+#     """
+#     return np.sqrt(_gamma) * _operC
+#
+#
+# def total_damping_oper_t(_operAu,
+#                          _operAv,
+#                          _operC,
+#                          _gamma=1.,
+#                          _args={
+#                              'GAMMA': 1,
+#                          }):
+#     """
+#     Returns the complete damping operator, with the time dependent part
+#     """
+#     return qt.QobjEvo([
+#         damping_oper(_operC, _gamma), [_operAu, g_u_stimulated_emission],
+#         [_operAv, g_v_stimulated_emission]
+#     ],
+#                       args=_args)
+#
 
 
 def scattering_stimulated_emission():
@@ -163,7 +164,7 @@ def scattering_stimulated_emission():
     # The Halmitonian in the master equation is in the interaction representation w.r.t H_S (system hamiltonian)
     # this means that H_S plays no role in the dymanic, and the easiest way to not have its contribution, is to
     # take W_0 = 0 BEWARE: this has no real physical meaning, it is just a shortcut to not rewrite several lines of code
-    W_0 = 0.
+    # W_0 = 0.
 
     gamma = 1.
     GAMMA = float(gamma) / 0.36
@@ -181,9 +182,15 @@ def scattering_stimulated_emission():
     tlist = np.linspace(0, 4, 10000)
     # Run the simulation
     result = qt.mesolve(
-        total_H_t(operAu, operAv, operC, W_0, gamma, ARGS), rho0, tlist,
+        lp.exponential_total_H_t(operAu,
+                                 operAv,
+                                 operC,
+                                 _gamma=gamma,
+                                 _args=ARGS), rho0, tlist,
         qt.lindblad_dissipator(
-            total_damping_oper_t(operAu, operAv, operC, gamma, ARGS)))
+            lp.exponential_total_damping_oper_t([operAu, operAv, operC],
+                                                _gamma=gamma,
+                                                _args=ARGS)))
 
     # Write the expectation values to file
     with open('./outputs/results_kiilerichmolmer_qp_fig4/input_one_photon.dat',
