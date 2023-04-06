@@ -23,7 +23,7 @@ def energy(_H, _rho):
     """
     Wrapper around qt.expect()
     """
-    return qt.expec(_H, _rho)
+    return qt.expect(_H, _rho)
 
 
 def ergotropy(_H, _rho):
@@ -49,8 +49,8 @@ def oscillator_H():
     pass
 
 
-def qubit_H():
-    pass
+def qubit_H(_W_0=1.):
+    return 0.5 * _W_0 * (qt.sigmaz() + 1.)
 
 
 def damping_oper(*_operators, _gamma=1.):
