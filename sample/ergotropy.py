@@ -137,25 +137,27 @@ def gaussian_ergotropy():
                                                  operC,
                                                  _gamma=GAMMA,
                                                  _args=ARGS)))
-        # with open('./outputs/ergotropy/input_one_photon.dat', 'w') as f:
-        #     input_pulse_state = qt.basis(N_U, 1)
-        #     for i in range(len(result.states)):
-        #         prob = np.abs(
-        #             result.states[i].ptrace(0).overlap(input_pulse_state))**2
-        #         f.write(str(prob) + '\n')
-        # with open('./outputs/ergotropy/excited_atom.dat', 'w') as f:
-        #     excited_atom_state = qt.basis(N_S, 0)
-        #     for i in range(len(result.states)):
-        #         prob = np.abs(
-        #             result.states[i].ptrace(1).overlap(excited_atom_state))**2
-        #         f.write(str(prob) + '\n')
-        # with open('./outputs/ergotropy/gs_atom.dat', 'w') as f:
-        #     gs_atom_state = qt.basis(N_S, 1)
-        #     for i in range(len(result.states)):
-        #         prob = np.abs(result.states[i].ptrace(1).overlap(gs_atom_state))**2
-        #         f.write(str(prob) + '\n')
-
+        rho_A = [result.states[i].ptrace(0) for i in range(len(result.states))]
         rho_B = [result.states[i].ptrace(1) for i in range(len(result.states))]
+        with (
+              open('./outputs/ergotropy/input_one_photon_' + str(SIGMA) +
+                   '.dat', 'w') as f1,
+              open('./outputs/ergotropy/excited_atom_' + str(SIGMA) +
+                   '.dat', 'w') as f2,
+              open('./outputs/ergotropy/gs_atom_' + str(SIGMA) +
+                   '.dat', 'w') as f3
+             ):
+            input_pulse_state = qt.basis(N_U, 1)
+            excited_atom_state = qt.basis(N_S, 0)
+            gs_atom_state = qt.basis(N_S, 1)
+            for i in range(len(result.states)):
+                prob = np.abs(rho_A[i].overlap(input_pulse_state))**2
+                f1.write(str(prob) + '\n')
+                prob = np.abs(rho_B[i].overlap(excited_atom_state))**2
+                f2.write(str(prob) + '\n')
+                prob = np.abs(rho_B[i].overlap(gs_atom_state))**2
+                f3.write(str(prob) + '\n')
+
         with open(
                 './outputs/ergotropy/gaussian_ergotropy_' + str(SIGMA) +
                 '.dat', 'w') as f:
