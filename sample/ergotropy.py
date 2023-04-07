@@ -101,9 +101,8 @@ def range_decimal(start, stop, step, stop_inclusive=False):
 
 def gaussian_ergotropy():
     """
-    The goal is to calculate the ergotropy as a function of sigma, given an interaction with a
-    Gaussian pulse. This is done by evolving the state for different values of sigma, and
-    calculating the ergotropy of the final state.
+    The goal is to calculate the ergotropy as a function of sigma,
+    given an interaction with a Gaussian pulse.
     """
     # Constants of the simulation
     GAMMA = 1.
@@ -156,9 +155,7 @@ def gaussian_ergotropy():
         #         prob = np.abs(result.states[i].ptrace(1).overlap(gs_atom_state))**2
         #         f.write(str(prob) + '\n')
 
-        # Get the final state of the system of the evolution and calculate its ergotropy
         rho_B = [result.states[i].ptrace(1) for i in range(len(result.states))]
-        # rho_B = result.states[-1].ptrace(1)
         with open(
                 './outputs/ergotropy/gaussian_ergotropy_' + str(SIGMA) +
                 '.dat', 'w') as f:
