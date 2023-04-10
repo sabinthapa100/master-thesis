@@ -17,6 +17,7 @@
 
 import math
 import qutip as qt
+import decimal
 
 
 def energy(_H, _rho):
@@ -73,3 +74,90 @@ def damping_oper(*_operators, _gamma=1.):
         # raise error if one of the inputs is not a quantum object
         raise TypeError("The input is not a quantum object")
     return math.sqrt(_gamma) * oper_list[0]
+
+
+def power(_e, _time):
+    """
+    Return the ratio _e/_time, which is the power
+    """
+    if _e == 0:
+        return 0
+    else:
+        return _e / float(_time)
+
+
+# copied from stackoverflow
+# https://stackoverflow.com/questions/39714647/can-you-use-float-numbers-in-this-for-loop
+def range_decimal(start, stop, step, stop_inclusive=False):
+    """ The Python range() function, using decimals.  A decimal loop_value generator.
+
+    Note: The decimal math (addition) defines the rounding.
+
+    If the stop is None, then:
+        stop = start
+        start = 0 (zero)
+
+    If the step is 0 (zero) or None, then:
+        if (stop < start) then step = -1 (minus one)
+        if (stop >= start) then step = 1 (one)
+
+    Example:
+        for index in range_decimal(0, 1.0, '.1', stop_inclusive=True):
+            print(index)
+
+    :param start: The loop start value
+    :param stop: The loop stop value
+    :param step: The loop step value
+    :param stop_inclusive: Include the stop value in the loop's yield generator: False = excluded ; True = included
+    :return: The loop generator's yield increment value (decimal)
+    """
+    try:
+        # Input argument(s) error check
+        zero = decimal.Decimal('0')
+
+        if start is None:
+            start = zero
+
+        if not isinstance(start, decimal.Decimal):
+            start = decimal.Decimal(f'{start}')
+
+        if stop is None:
+            stop = start
+            start = zero
+
+        if not isinstance(stop, decimal.Decimal):
+            stop = decimal.Decimal(f'{stop}')
+
+        if step is None:
+            step = decimal.Decimal('-1' if stop < start else '1')
+
+        if not isinstance(step, decimal.Decimal):
+            step = decimal.Decimal(f'{step}')
+
+        if step == zero:
+            step = decimal.Decimal('-1' if stop < start else '1')
+
+        # Check for valid loop conditions
+        if start == stop or (start < stop
+                             and step < zero) or (start > stop
+                                                  and step > zero):
+            return  # Not valid: no loop
+
+        # Case: increment step ( > 0 )
+        if step > zero:
+            while start < stop:  # Yield the decimal loop points (stop value excluded)
+                yield start
+                start += step
+
+        # Case: decrement step ( < 0 )
+        else:
+            while start > stop:  # Yield the decimal loop points (stop value excluded)
+                yield start
+                start += step
+
+        # Yield the stop value (inclusive)
+        if stop_inclusive:
+            yield stop
+
+    except (ValueError, decimal.DecimalException) as ex:
+        raise ValueError(f'{__name__}.range_decimal() error: {ex}')
