@@ -48,7 +48,12 @@ def gaussian_ergotropy():
     SIGMA = 1.
     ARGS = {'mu': MU, 'sigma': float(SIGMA)}
 
-    tlist = np.linspace(-4*float(SIGMA), 4*float(SIGMA), 10000)
+    t_max = 4*float(SIGMA)
+    t_min = -4*float(SIGMA)
+    dt = 0.001/GAMMA
+    steps = int((t_max - t_min) / dt)
+    tlist = np.linspace(t_min, t_max, steps)
+
     result = qt.mesolve(
         lp.gaussian_total_H_t([operAu, operC], _gamma=GAMMA, _args=ARGS),
         rho0, tlist,
@@ -71,11 +76,11 @@ def gaussian_ergotropy():
         excited_atom_state = qt.basis(N_S, 0)
         gs_atom_state = qt.basis(N_S, 1)
         for i in range(len(result.states)):
-            prob = np.abs(rho_A[i].overlap(input_pulse_state))**2
+            prob = rho_A[i].overlap(input_pulse_state)
             f1.write(str(prob) + '\n')
-            prob = np.abs(rho_B[i].overlap(excited_atom_state))**2
+            prob = rho_B[i].overlap(excited_atom_state)
             f2.write(str(prob) + '\n')
-            prob = np.abs(rho_B[i].overlap(gs_atom_state))**2
+            prob = rho_B[i].overlap(gs_atom_state)
             f3.write(str(prob) + '\n')
 
         # with open(
