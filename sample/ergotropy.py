@@ -21,6 +21,66 @@ import qutip as qt
 import numpy as np
 
 
+def gaussian_population(init_state,
+                        gamma=1.,
+                        w_0=1.,
+                        mean_ph_num=1.,
+                        args={
+                            'mu': 0,
+                            'sigma': 1
+                        },
+                        precision=0.001):
+    # Constants
+    w_0 *= gamma
+    N_U = mean_ph_num + 1
+    N_S = 2
+    # MU = args['mu']
+    SIGMA = args['sigma']
+
+    # Operators
+    operAu = qt.tensor(qt.destroy(N_U), qt.qeye(N_S))
+    operC = qt.tensor(qt.qeye(N_U), qt.sigmam())
+
+    # Hamiltonian of the system
+    H_S = utils.qubit_H(w_0)
+
+    # Calculate time interval for the integration
+    t_max = 4 * float(SIGMA)
+    t_min = -4 * float(SIGMA)
+    dt = precision / gamma
+    steps = int((t_max - t_min) / dt)
+    tlist = np.linspace(t_min, t_max, steps)
+
+    # Output states
+    input_pulse_state = qt.tensor(qt.basis(N_U, 1), qt.eye(N_S))
+    gs_atom_state = qt.tensor(qt.eye(N_U), qt.basis(N_S, 1))
+    excited_atom_state = qt.tensor(qt.eye(N_U), qt.basis(N_S, 0))
+
+
+    # Run the simulation
+    result = qt.mesolve(
+        lp.gaussian_total_H_t([operAu, operC], _gamma=gamma,
+                              _args=args), init_state, tlist,
+        qt.lindblad_dissipator(
+            lp.gaussian_total_damping_oper_t(operAu,
+                                             operC,
+                                             _gamma=gamma,
+                                             _args=args)),
+        [input_pulse_state, gs_atom_state, excited_atom_state])
+
+    with (
+          open('./outputs/ergotropy/input_one_photon_' + str(SIGMA) +
+               '.dat', 'w') as f1,
+          open('./outputs/ergotropy/excited_atom_' + str(SIGMA) +
+               '.dat', 'w') as f2,
+          open('./outputs/ergotropy/gs_atom_' + str(SIGMA) +
+               '.dat', 'w') as f3
+         ):
+        for i in range(len(tlist)):
+            f1.write(str(result.expect[0][i]) + '\n')
+            f2.write(str(result.expect[1][i]) + '\n')
+            f3.write(str(result.expect[2][i]) + '\n')
+
 def gaussian_ergotropy():
     """
     The goal is to calculate the ergotropy as a function of sigma,
@@ -48,15 +108,15 @@ def gaussian_ergotropy():
     SIGMA = 1.
     ARGS = {'mu': MU, 'sigma': float(SIGMA)}
 
-    t_max = 4*float(SIGMA)
-    t_min = -4*float(SIGMA)
-    dt = 0.001/GAMMA
+    t_max = 4 * float(SIGMA)
+    t_min = -4 * float(SIGMA)
+    dt = 0.001 / GAMMA
     steps = int((t_max - t_min) / dt)
     tlist = np.linspace(t_min, t_max, steps)
 
     result = qt.mesolve(
-        lp.gaussian_total_H_t([operAu, operC], _gamma=GAMMA, _args=ARGS),
-        rho0, tlist,
+        lp.gaussian_total_H_t([operAu, operC], _gamma=GAMMA, _args=ARGS), rho0,
+        tlist,
         qt.lindblad_dissipator(
             lp.gaussian_total_damping_oper_t(operAu,
                                              operC,
@@ -64,48 +124,48 @@ def gaussian_ergotropy():
                                              _args=ARGS)))
     rho_A = [result.states[i].ptrace(0) for i in range(len(result.states))]
     rho_B = [result.states[i].ptrace(1) for i in range(len(result.states))]
-    with (
-          open('./outputs/ergotropy/input_one_photon_' + str(SIGMA) +
-               '.dat', 'w') as f1,
-          open('./outputs/ergotropy/excited_atom_' + str(SIGMA) +
-               '.dat', 'w') as f2,
-          open('./outputs/ergotropy/gs_atom_' + str(SIGMA) +
-               '.dat', 'w') as f3
-         ):
-        input_pulse_state = qt.basis(N_U, 1)
-        excited_atom_state = qt.basis(N_S, 0)
-        gs_atom_state = qt.basis(N_S, 1)
-        for i in range(len(result.states)):
-            prob = rho_A[i].overlap(input_pulse_state)
-            f1.write(str(prob) + '\n')
-            prob = rho_B[i].overlap(excited_atom_state)
-            f2.write(str(prob) + '\n')
-            prob = rho_B[i].overlap(gs_atom_state)
-            f3.write(str(prob) + '\n')
+    # with (
+    #       open('./outputs/ergotropy/input_one_photon_' + str(SIGMA) +
+    #            '.dat', 'w') as f1,
+    #       open('./outputs/ergotropy/excited_atom_' + str(SIGMA) +
+    #            '.dat', 'w') as f2,
+    #       open('./outputs/ergotropy/gs_atom_' + str(SIGMA) +
+    #            '.dat', 'w') as f3
+    #      ):
+    #     input_pulse_state = qt.basis(N_U, 1)
+    #     excited_atom_state = qt.basis(N_S, 0)
+    #     gs_atom_state = qt.basis(N_S, 1)
+    #     for i in range(len(result.states)):
+    #         prob = rho_A[i].overlap(input_pulse_state)
+    #         f1.write(str(prob) + '\n')
+    #         prob = rho_B[i].overlap(excited_atom_state)
+    #         f2.write(str(prob) + '\n')
+    #         prob = rho_B[i].overlap(gs_atom_state)
+    #         f3.write(str(prob) + '\n')
 
-        # with open(
-        #         './outputs/ergotropy/gaussian_ergotropy_' + str(SIGMA) +
-        #         '.dat', 'w') as f:
-        #     for i in range(len(rho_B)):
-        #         f.write(str(utils.ergotropy(H_S, rho_B[i])) + '\n')
-        # with (
-        #         open('./outputs/ergotropy/max_gaussian_ergotropy.dat', 'a') as f1,
-        #         open('./outputs/ergotropy/max_gaussian_energy.dat', 'a') as f2,
-        #         # open('./outputs/ergotropy/max_gaussian_purity.dat', 'a') as f3,
-        #         open('./outputs/ergotropy/max_gaussian_power.dat', 'a') as f4
-        #         ):
-        #     erg_B = [utils.ergotropy(H_S, rho_B[i]) for i in range(len(rho_B))]
-        #     max_erg_B = max(erg_B)
-        #     f1.write(str(SIGMA) + ' ' + str(max_erg_B) + '\n')
-        #     ene_B = [utils.energy(H_S, rho_B[i]) for i in range(len(rho_B))]
-        #     max_ene_B = max(ene_B)
-        #     f2.write(str(SIGMA) + ' ' + str(max_ene_B) + '\n')
-        #     # purity_B = [rho_B[i].purity() for i in range(len(rho_B))]
-        #     # max_purity_B = max(purity_B)
-        #     # f3.write(str(SIGMA) + ' ' + str(max_purity_B) + '\n')
-        #     pow_B = [utils.power(erg_B[i], tlist[i]) for i in range(len(rho_B))]
-        #     max_pow_B = max(pow_B)
-        #     f4.write(str(SIGMA) + ' ' + str(max_pow_B) + '\n')
+    # with open(
+    #         './outputs/ergotropy/gaussian_ergotropy_' + str(SIGMA) +
+    #         '.dat', 'w') as f:
+    #     for i in range(len(rho_B)):
+    #         f.write(str(utils.ergotropy(H_S, rho_B[i])) + '\n')
+    # with (
+    #         open('./outputs/ergotropy/max_gaussian_ergotropy.dat', 'a') as f1,
+    #         open('./outputs/ergotropy/max_gaussian_energy.dat', 'a') as f2,
+    #         # open('./outputs/ergotropy/max_gaussian_purity.dat', 'a') as f3,
+    #         open('./outputs/ergotropy/max_gaussian_power.dat', 'a') as f4
+    #         ):
+    #     erg_B = [utils.ergotropy(H_S, rho_B[i]) for i in range(len(rho_B))]
+    #     max_erg_B = max(erg_B)
+    #     f1.write(str(SIGMA) + ' ' + str(max_erg_B) + '\n')
+    #     ene_B = [utils.energy(H_S, rho_B[i]) for i in range(len(rho_B))]
+    #     max_ene_B = max(ene_B)
+    #     f2.write(str(SIGMA) + ' ' + str(max_ene_B) + '\n')
+    #     # purity_B = [rho_B[i].purity() for i in range(len(rho_B))]
+    #     # max_purity_B = max(purity_B)
+    #     # f3.write(str(SIGMA) + ' ' + str(max_purity_B) + '\n')
+    #     pow_B = [utils.power(erg_B[i], tlist[i]) for i in range(len(rho_B))]
+    #     max_pow_B = max(pow_B)
+    #     f4.write(str(SIGMA) + ' ' + str(max_pow_B) + '\n')
 
     # SIGMA = 1.
     # ARGS = {'mu': MU, 'sigma': float(SIGMA)}
@@ -130,7 +190,11 @@ def gaussian_ergotropy():
 
 
 def main():
-    gaussian_ergotropy()
+    N_U = 2
+    N_S = 2
+    rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
+    gaussian_population(rho0)
+    #gaussian_ergotropy()
 
 
 if __name__ == "__main__":
