@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import myfunctions as mf
+import utils
 import numpy as np
 import qutip as qt
 
@@ -43,7 +43,7 @@ def compute_energy_ergotropy(_H_evolve, _H_B, _rho0, _times, _c_ops, _w_zero,
             './outputs/results_energytransferforqb/ergotropy_' + _filename +
             '.dat', 'w') as f:
         for i in range(len(rho_B)):
-            f.write(str(mf.ergotropy(_H_B, rho_B[i]) / _w_zero) + '\n')
+            f.write(str(utils.ergotropy(_H_B, rho_B[i]) / _w_zero) + '\n')
 
 
 def delta_HA_t0(_F, _oper):
