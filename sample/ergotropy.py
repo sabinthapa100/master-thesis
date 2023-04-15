@@ -24,25 +24,23 @@ import numpy as np
 def gaussian_population(init_state,
                         gamma=1.,
                         w_0=1.,
-                        mean_ph_num=1.,
                         args={
                             'mu': 0,
                             'sigma': 1
                         },
                         precision=0.001):
+    """
+    Calculate the populations of the pulse Fock state, and of the ground and
+    exicted state of the qubit as the interaction progresses
+    """
     # Constants
     w_0 *= gamma
-    N_U = mean_ph_num + 1
-    N_S = 2
-    # MU = args['mu']
     SIGMA = args['sigma']
-
+    N_U = init_state.dims[0][0]
+    N_S = init_state.dims[0][1]
     # Operators
     operAu = qt.tensor(qt.destroy(N_U), qt.qeye(N_S))
     operC = qt.tensor(qt.qeye(N_U), qt.sigmam())
-
-    # Hamiltonian of the system
-    H_S = utils.qubit_H(w_0)
 
     # Calculate time interval for the integration
     t_max = 4 * float(SIGMA)
@@ -52,10 +50,9 @@ def gaussian_population(init_state,
     tlist = np.linspace(t_min, t_max, steps)
 
     # Output states
-    input_pulse_state = qt.tensor(qt.basis(N_U, 1), qt.eye(N_S))
-    gs_atom_state = qt.tensor(qt.eye(N_U), qt.basis(N_S, 1))
-    excited_atom_state = qt.tensor(qt.eye(N_U), qt.basis(N_S, 0))
-
+    input_pulse_state = qt.tensor(qt.fock_dm(N_U, 1), qt.qeye(N_S))
+    gs_atom_state = qt.tensor(qt.qeye(N_U), qt.ket2dm(qt.basis(N_S, 1)))
+    excited_atom_state = qt.tensor(qt.qeye(N_U), qt.ket2dm(qt.basis(N_S, 0)))
 
     # Run the simulation
     result = qt.mesolve(
@@ -68,18 +65,13 @@ def gaussian_population(init_state,
                                              _args=args)),
         [input_pulse_state, gs_atom_state, excited_atom_state])
 
-    with (
-          open('./outputs/ergotropy/input_one_photon_' + str(SIGMA) +
-               '.dat', 'w') as f1,
-          open('./outputs/ergotropy/excited_atom_' + str(SIGMA) +
-               '.dat', 'w') as f2,
-          open('./outputs/ergotropy/gs_atom_' + str(SIGMA) +
-               '.dat', 'w') as f3
-         ):
-        for i in range(len(tlist)):
-            f1.write(str(result.expect[0][i]) + '\n')
-            f2.write(str(result.expect[1][i]) + '\n')
-            f3.write(str(result.expect[2][i]) + '\n')
+    np.savetxt('./outputs/ergotropy/input_one_photon_' + str(SIGMA) + '.dat',
+               result.expect[0])
+    np.savetxt('./outputs/ergotropy/gs_atom_' + str(SIGMA) + '.dat',
+               result.expect[1])
+    np.savetxt('./outputs/ergotropy/excited_atom_' + str(SIGMA) + '.dat',
+               result.expect[2])
+
 
 def gaussian_ergotropy():
     """
@@ -194,7 +186,7 @@ def main():
     N_S = 2
     rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
     gaussian_population(rho0)
-    #gaussian_ergotropy()
+    # gaussian_ergotropy()
 
 
 if __name__ == "__main__":
