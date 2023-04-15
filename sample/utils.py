@@ -18,6 +18,8 @@
 import math
 import qutip as qt
 import decimal
+import numpy as np
+# import time
 
 
 def energy(_H, _rho):
@@ -33,16 +35,21 @@ def ergotropy(_H, _rho):
     """
 
     # First, we calculate the energy expectation value
+    # t0 = time.time()
     _energy = energy(_H, _rho)
+    # t1 = time.time()
+    # print("ergotropy: energy calc time: ", t1-t0)
     # Then, compute the eigenvalues and sort them in the wanted order
+    # t0 = time.time()
     _rho_eigenvalues = _rho.eigenenergies(sort='high')
     _H_eigenvalues = _H.eigenenergies(sort='low')
-
+    # t1 = time.time()
+    # print("ergotropy: eigenenergies calc time: ", t1-t0)
     # and then compute the second term of the expression
-    _energy_passive = 0.
-    for i in range(len(_rho_eigenvalues)):
-        _energy_passive += _rho_eigenvalues[i] * _H_eigenvalues[i]
-
+    # t0 = time.time()
+    _energy_passive = np.sum(_rho_eigenvalues * _H_eigenvalues)
+    # t1 = time.time()
+    # print("ergotropy: emergy_passive calc time: ", t1-t0)
     return _energy - _energy_passive
 
 
