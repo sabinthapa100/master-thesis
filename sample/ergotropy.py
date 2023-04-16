@@ -74,13 +74,21 @@ def gaussian_population(init_state,
                result.expect[2])
 
 
-def gaussian_ergotropy(init_state, gamma=1., w_0=1., mu=0, precision=0.001):
+def gaussian_ergotropy(init_state,
+                       sigma_start,
+                       sigma_stop,
+                       gamma=1.,
+                       w_0=1.,
+                       mu=0,
+                       precision=0.001):
     """
     The goal is to calculate the ergotropy as a function of sigma,
     given an interaction with a Gaussian pulse.
     """
     # Constants of the simulation
     w_0 *= gamma
+    sigma_start *= gamma
+    sigma_stop *= gamma
     N_U = init_state.dims[0][0]
     N_S = init_state.dims[0][1]
 
@@ -94,8 +102,8 @@ def gaussian_ergotropy(init_state, gamma=1., w_0=1., mu=0, precision=0.001):
     max_erg_S, max_ene_S, max_pow_S = [], [], []
 
     # Run the simulation
-    for sigma in utils.range_decimal(0.1 * gamma,
-                                     10 * gamma,
+    for sigma in utils.range_decimal(sigma_start,
+                                     sigma_stop,
                                      0.1,
                                      stop_inclusive=True):
 
@@ -131,7 +139,7 @@ def gaussian_ergotropy(init_state, gamma=1., w_0=1., mu=0, precision=0.001):
         for i in range(len(rho_S)):
             erg_S.append(utils.ergotropy(H_S, rho_S[i]))
             ene_S.append(utils.energy(H_S, rho_S[i]))
-            pow_S.append(utils.power(erg_S[i], tlist[i]))
+            pow_S.append(utils.power(erg_S[i], tlist[i], erg_S[0], tlist[0]))
         t1 = time.time()
         print("calculating quantities running time: ", t1 - t0)
         # t0 = time.time()
@@ -157,21 +165,37 @@ def gaussian_ergotropy(init_state, gamma=1., w_0=1., mu=0, precision=0.001):
         # print(max_ene_S)
         # print(max_pow_S)
     # Save the results to file
-    np.savetxt('./outputs/ergotropy/max_gaussian_ergotropy.dat',
-               np.array(max_erg_S))
-    np.savetxt('./outputs/ergotropy/max_gaussian_energy.dat',
-               np.array(max_ene_S))
-    np.savetxt('./outputs/ergotropy/max_gaussian_power.dat',
-               np.array(max_pow_S))
+    np.savetxt(
+        './outputs/ergotropy/max_gaussian_ergotropy_' + str(sigma_start) +
+        '_' + str(sigma_stop) + '.dat', np.array(max_erg_S))
+    np.savetxt(
+        './outputs/ergotropy/max_gaussian_energy_' + str(sigma_start) + '_' +
+        str(sigma_stop) + '.dat', np.array(max_ene_S))
+    np.savetxt(
+        './outputs/ergotropy/max_gaussian_power_' + str(sigma_start) + '_' +
+        str(sigma_stop) + '.dat', np.array(max_pow_S))
 
 
-def main():
+def main(sigma_start, sigma_stop):
     N_U = 2
     N_S = 2
     rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
     # gaussian_population(rho0)
-    gaussian_ergotropy(rho0)
+    gaussian_ergotropy(init_state=rho0,
+                       sigma_start=sigma_start,
+                       sigma_stop=sigma_stop)
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Simulate a gaussian pulse interacting with a qubit.')
+    parser.add_argument('sigma_start',
+                        type=float,
+                        help='starting value of sigma')
+    parser.add_argument('sigma_stop',
+                        type=float,
+                        help='stopping value of sigma')
+    args = parser.parse_args()
+    main(sigma_start=args.sigma_start, sigma_stop=args.sigma_stop)
