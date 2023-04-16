@@ -101,7 +101,16 @@ def gaussian_ergotropy(init_state,
     H_S = utils.qubit_H(w_0)
 
     # Output lists
-    max_erg_S, max_ene_S, max_pow_S = [], [], []
+    # max_erg_S, max_ene_S, max_pow_S = [], [], []
+    out_erg_file = output_path + '/ergotropy_' + str(sigma_start) + '_' + str(
+        sigma_stop) + '.dat'
+    out_ene_file = output_path + '/energy' + str(sigma_start) + '_' + str(
+        sigma_stop) + '.dat'
+    out_pow_file = output_path + '/power' + str(sigma_start) + '_' + str(
+        sigma_stop) + '.dat'
+    for file in [out_erg_file, out_ene_file, out_pow_file]:
+        if os.path.exists(file):
+            os.remove(file)
 
     # Run the simulation
     for sigma in utils.range_decimal(sigma_start,
@@ -145,17 +154,11 @@ def gaussian_ergotropy(init_state,
         # t1 = time.time()
         # print("calculating quantities running time: ", t1 - t0)
         # Save the results to file
-        with open(
-                output_path + '/ergotropy_' + str(sigma_start) + '_' +
-                str(sigma_stop) + '.dat', 'a') as f:
+        with open(out_erg_file, 'a') as f:
             f.write(str(max(erg_S)) + '\n')
-        with open(
-                output_path + '/energy_' + str(sigma_start) + '_' +
-                str(sigma_stop) + '.dat', 'a') as f:
+        with open(out_ene_file, 'a') as f:
             f.write(str(max(ene_S)) + '\n')
-        with open(
-                output_path + '/power_' + str(sigma_start) + '_' +
-                str(sigma_stop) + '.dat', 'a') as f:
+        with open(out_pow_file, 'a') as f:
             f.write(str(max(pow_S)) + '\n')
     # np.savetxt(
     #     output_path + '/ergotropy_' + str(sigma_start) + '_' +
