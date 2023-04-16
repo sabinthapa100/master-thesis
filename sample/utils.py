@@ -83,14 +83,16 @@ def damping_oper(*_operators, _gamma=1.):
     return math.sqrt(_gamma) * oper_list[0]
 
 
-def power(_e, _time):
+def power(_ef, _tf, _ei=0., _ti=0.):
     """
-    Return the ratio _e/_time, which is the power
+    Return the ratio (_ef-_ei)/(_tf-_ti), which is the power
     """
-    if _e == 0:
+    de = float(_ef - _ei)
+    dt = float(_tf - _ti)
+    if de == 0:
         return 0
     else:
-        return _e / float(_time)
+        return de / dt
 
 
 # copied from stackoverflow
