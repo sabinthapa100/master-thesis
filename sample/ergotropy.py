@@ -19,7 +19,8 @@ import utils
 import lightpulse as lp
 import qutip as qt
 import numpy as np
-import time
+# import time
+import os
 
 
 def gaussian_population(init_state,
@@ -77,6 +78,7 @@ def gaussian_population(init_state,
 def gaussian_ergotropy(init_state,
                        sigma_start,
                        sigma_stop,
+                       output_path,
                        gamma=1.,
                        w_0=1.,
                        mu=0,
@@ -107,7 +109,7 @@ def gaussian_ergotropy(init_state,
                                      0.1,
                                      stop_inclusive=True):
 
-        print(float(sigma))
+        # print(float(sigma))
         # Calculate time interval for the integration
         t_min = -4 * float(sigma)
         t_max = 4 * float(sigma)
@@ -119,7 +121,7 @@ def gaussian_ergotropy(init_state,
         args = {'mu': mu, 'sigma': float(sigma)}
 
         # Calculate all of the states
-        t0 = time.time()
+        # t0 = time.time()
         result = qt.mesolve(
             lp.gaussian_total_H_t([operAu, operC], _gamma=gamma, _args=args),
             init_state, tlist,
@@ -128,62 +130,61 @@ def gaussian_ergotropy(init_state,
                                                  operC,
                                                  _gamma=gamma,
                                                  _args=args)))
-        t1 = time.time()
-        print("mesolve running time: ", t1 - t0)
+        # t1 = time.time()
+        # print("mesolve running time: ", t1 - t0)
         # Get only the states for the system
         rho_S = [result.states[i].ptrace(1) for i in range(len(result.states))]
 
         # Calcate ergotropy, energy and power and append to output lists
         erg_S, ene_S, pow_S = [], [], []
-        t0 = time.time()
+        # t0 = time.time()
         for i in range(len(rho_S)):
             erg_S.append(utils.ergotropy(H_S, rho_S[i]))
             ene_S.append(utils.energy(H_S, rho_S[i]))
             pow_S.append(utils.power(erg_S[i], tlist[i], erg_S[0], tlist[0]))
-        t1 = time.time()
-        print("calculating quantities running time: ", t1 - t0)
-        # t0 = time.time()
-        # erg_S = [utils.ergotropy(H_S, rho_S[i]) for i in range(len(rho_S))]
         # t1 = time.time()
-        # print("calculating ergotropy running time: ", t1 - t0)
-        # t0 = time.time()
-        # ene_S = [utils.energy(H_S, rho_S[i]) for i in range(len(rho_S))]
-        # t1 = time.time()
-        # print("calculating energy running time: ", t1 - t0)
-        # t0 = time.time()
-        # pow_S = [utils.power(erg_S[i], tlist[i]) for i in range(len(rho_S))]
-        # t1 = time.time()
-        # print("calculating power running time: ", t1 - t0)
+        # print("calculating quantities running time: ", t1 - t0)
 
-        t0 = time.time()
+        # t0 = time.time()
         max_erg_S.append(max(erg_S))
         max_ene_S.append(max(ene_S))
         max_pow_S.append(max(pow_S))
-        t1 = time.time()
-        print("finding max running time: ", t1 - t0)
-        # print(max_erg_S)
-        # print(max_ene_S)
-        # print(max_pow_S)
+        # t1 = time.time()
+        # print("finding max running time: ", t1 - t0)
     # Save the results to file
     np.savetxt(
-        './outputs/ergotropy/max_gaussian_ergotropy_' + str(sigma_start) +
-        '_' + str(sigma_stop) + '.dat', np.array(max_erg_S))
+        output_path + '/ergotropy_' + str(sigma_start) + '_' +
+        str(sigma_stop) + '.dat', np.array(max_erg_S))
     np.savetxt(
-        './outputs/ergotropy/max_gaussian_energy_' + str(sigma_start) + '_' +
-        str(sigma_stop) + '.dat', np.array(max_ene_S))
+        output_path + '/energy_' + str(sigma_start) + '_' + str(sigma_stop) +
+        '.dat', np.array(max_ene_S))
     np.savetxt(
-        './outputs/ergotropy/max_gaussian_power_' + str(sigma_start) + '_' +
-        str(sigma_stop) + '.dat', np.array(max_pow_S))
+        output_path + '/power_' + str(sigma_start) + '_' + str(sigma_stop) +
+        '.dat', np.array(max_pow_S))
 
 
-def main(sigma_start, sigma_stop):
-    N_U = 2
-    N_S = 2
-    rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
+def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
     # gaussian_population(rho0)
-    gaussian_ergotropy(init_state=rho0,
-                       sigma_start=sigma_start,
-                       sigma_stop=sigma_stop)
+    output_path = "outputs/ergotropy/max_gaussian/"
+    N_S = 2
+    if pulse_state == 'fock':
+        subdir = pulse_state + '_' + str(mean_num_photons)
+        complete_out_path = output_path + subdir
+        if not os.path.exists(complete_out_path):
+            os.makedirs(complete_out_path)
+        N_U = mean_num_photons + 1
+        rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
+        gaussian_ergotropy(init_state=rho0,
+                           sigma_start=sigma_start,
+                           sigma_stop=sigma_stop,
+                           output_path=complete_out_path)
+    elif pulse_state == 'squeezed':
+        pass
+    elif pulse_state == 'coherent':
+        pass
+    else:
+        raise TypeError(
+            "`pulse_state` must either be fock, squeezed or coherent")
 
 
 if __name__ == "__main__":
@@ -191,6 +192,13 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description='Simulate a gaussian pulse interacting with a qubit.')
+    parser.add_argument('pulse_state',
+                        choices=['fock', 'squeezed', 'coherent'],
+                        help='initial state of the pulse')
+    parser.add_argument(
+        'number_of_photons',
+        type=int,
+        help='mean value of photons in the pulse initial state')
     parser.add_argument('sigma_start',
                         type=float,
                         help='starting value of sigma')
@@ -198,4 +206,7 @@ if __name__ == "__main__":
                         type=float,
                         help='stopping value of sigma')
     args = parser.parse_args()
-    main(sigma_start=args.sigma_start, sigma_stop=args.sigma_stop)
+    main(pulse_state=args.pulse_state,
+         mean_num_photons=args.number_of_photons,
+         sigma_start=args.sigma_start,
+         sigma_stop=args.sigma_stop)
