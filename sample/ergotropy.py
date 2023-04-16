@@ -144,23 +144,28 @@ def gaussian_ergotropy(init_state,
             pow_S.append(utils.power(erg_S[i], tlist[i], erg_S[0], tlist[0]))
         # t1 = time.time()
         # print("calculating quantities running time: ", t1 - t0)
-
-        # t0 = time.time()
-        max_erg_S.append(max(erg_S))
-        max_ene_S.append(max(ene_S))
-        max_pow_S.append(max(pow_S))
-        # t1 = time.time()
-        # print("finding max running time: ", t1 - t0)
-    # Save the results to file
-    np.savetxt(
-        output_path + '/ergotropy_' + str(sigma_start) + '_' +
-        str(sigma_stop) + '.dat', np.array(max_erg_S))
-    np.savetxt(
-        output_path + '/energy_' + str(sigma_start) + '_' + str(sigma_stop) +
-        '.dat', np.array(max_ene_S))
-    np.savetxt(
-        output_path + '/power_' + str(sigma_start) + '_' + str(sigma_stop) +
-        '.dat', np.array(max_pow_S))
+        # Save the results to file
+        with open(
+                output_path + '/ergotropy_' + str(sigma_start) + '_' +
+                str(sigma_stop) + '.dat', 'a') as f:
+            f.write(str(max(erg_S)) + '\n')
+        with open(
+                output_path + '/energy_' + str(sigma_start) + '_' +
+                str(sigma_stop) + '.dat', 'a') as f:
+            f.write(str(max(ene_S)) + '\n')
+        with open(
+                output_path + '/power_' + str(sigma_start) + '_' +
+                str(sigma_stop) + '.dat', 'a') as f:
+            f.write(str(max(pow_S)) + '\n')
+    # np.savetxt(
+    #     output_path + '/ergotropy_' + str(sigma_start) + '_' +
+    #     str(sigma_stop) + '.dat', np.array(max_erg_S))
+    # np.savetxt(
+    #     output_path + '/energy_' + str(sigma_start) + '_' + str(sigma_stop) +
+    #     '.dat', np.array(max_ene_S))
+    # np.savetxt(
+    #     output_path + '/power_' + str(sigma_start) + '_' + str(sigma_stop) +
+    #     '.dat', np.array(max_pow_S))
 
 
 def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
