@@ -104,9 +104,9 @@ def gaussian_ergotropy(init_state,
     # max_erg_S, max_ene_S, max_pow_S = [], [], []
     out_erg_file = output_path + '/ergotropy_' + str(sigma_start) + '_' + str(
         sigma_stop) + '.dat'
-    out_ene_file = output_path + '/energy' + str(sigma_start) + '_' + str(
+    out_ene_file = output_path + '/energy_' + str(sigma_start) + '_' + str(
         sigma_stop) + '.dat'
-    out_pow_file = output_path + '/power' + str(sigma_start) + '_' + str(
+    out_pow_file = output_path + '/power_' + str(sigma_start) + '_' + str(
         sigma_stop) + '.dat'
     for file in [out_erg_file, out_ene_file, out_pow_file]:
         if os.path.exists(file):
@@ -173,7 +173,7 @@ def gaussian_ergotropy(init_state,
 
 def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
     # gaussian_population(rho0)
-    output_path = "outputs/ergotropy/max_gaussian/"
+    output_path = "/home/pirota/master-thesis/sample/outputs/ergotropy/max_gaussian/"
     N_S = 2
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
