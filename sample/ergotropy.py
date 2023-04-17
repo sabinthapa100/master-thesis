@@ -181,7 +181,7 @@ def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
         if not os.path.exists(complete_out_path):
             os.makedirs(complete_out_path)
         N_U = mean_num_photons + 1
-        rho0 = qt.tensor(qt.basis(N_U, 1), qt.basis(N_S, 1))
+        rho0 = qt.tensor(qt.basis(N_U, mean_num_photons), qt.basis(N_S, 1))
         gaussian_ergotropy(init_state=rho0,
                            sigma_start=sigma_start,
                            sigma_stop=sigma_stop,
