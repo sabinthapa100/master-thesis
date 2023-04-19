@@ -186,13 +186,23 @@ def main(pulse_state,
             os.makedirs(complete_out_path)
         N_U = mean_num_photons + 1
         rho0 = qt.tensor(qt.basis(N_U, mean_num_photons), qt.basis(N_S, 1))
-        gaussian_ergotropy(init_state=rho0,
-                           sigma_start=sigma_start,
-                           sigma_stop=sigma_stop,
-                           output_path=complete_out_path,
-                           precision=precision)
     elif pulse_state == 'squeezed':
-        pass
+        subdir = pulse_state + '_' + str(mean_num_photons)
+        complete_out_path = output_path + subdir
+        if not os.path.exists(complete_out_path):
+            os.makedirs(complete_out_path)
+        # Calculate N_U such that the state is normalized
+        r = np.sqrt(np.arcsinh(mean_num_photons))
+        ch_r = np.cosh(r)
+        th_r = np.tanh(r)
+        N_U = 1
+        while abs((1 / ch_r) *
+                  sum([(th_r * 0.5)**(2 * m) * np.math.factorial(2 * m) /
+                       (np.math.factorial(m) * np.math.factorial(m))
+                       for m in range(0, N_U)]) - 1) > precision:
+            N_U += 1
+        rho0 = qt.tensor(
+            qt.squeeze(N_U, r) * qt.basis(N_U, 0), qt.basis(N_S, 1))
     elif pulse_state == 'coherent':
         subdir = pulse_state + '_' + str(mean_num_photons)
         complete_out_path = output_path + subdir
@@ -207,14 +217,15 @@ def main(pulse_state,
              for m in range(0, N_U)]) - 1) > precision:
             N_U += 1
         rho0 = qt.tensor(qt.coherent(N_U, alpha), qt.basis(N_S, 1))
-        gaussian_ergotropy(init_state=rho0,
-                           sigma_start=sigma_start,
-                           sigma_stop=sigma_stop,
-                           output_path=complete_out_path,
-                           precision=precision)
     else:
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
+
+    gaussian_ergotropy(init_state=rho0,
+                       sigma_start=sigma_start,
+                       sigma_stop=sigma_stop,
+                       output_path=complete_out_path,
+                       precision=precision)
 
 
 if __name__ == "__main__":
