@@ -82,7 +82,7 @@ def gaussian_ergotropy(init_state,
                        gamma=1.,
                        w_0=1.,
                        mu=0,
-                       precision=0.001):
+                       precision=1e-3):
     """
     The goal is to calculate the ergotropy as a function of sigma,
     given an interaction with a Gaussian pulse.
@@ -122,7 +122,7 @@ def gaussian_ergotropy(init_state,
         # Calculate time interval for the integration
         t_min = -4 * float(sigma)
         t_max = 4 * float(sigma)
-        dt = 0.001 / gamma
+        dt = precision / gamma
         steps = int((t_max - t_min) / dt)
         tlist = np.linspace(t_min, t_max, steps)
 
@@ -171,7 +171,11 @@ def gaussian_ergotropy(init_state,
     #     '.dat', np.array(max_pow_S))
 
 
-def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
+def main(pulse_state,
+         mean_num_photons,
+         sigma_start,
+         sigma_stop,
+         precision=1e-3):
     # gaussian_population(rho0)
     output_path = "/home/pirota/master-thesis/sample/outputs/ergotropy/max_gaussian/"
     N_S = 2
@@ -185,11 +189,29 @@ def main(pulse_state, mean_num_photons, sigma_start, sigma_stop):
         gaussian_ergotropy(init_state=rho0,
                            sigma_start=sigma_start,
                            sigma_stop=sigma_stop,
-                           output_path=complete_out_path)
+                           output_path=complete_out_path,
+                           precision=precision)
     elif pulse_state == 'squeezed':
         pass
     elif pulse_state == 'coherent':
-        pass
+        subdir = pulse_state + '_' + str(mean_num_photons)
+        complete_out_path = output_path + subdir
+        if not os.path.exists(complete_out_path):
+            os.makedirs(complete_out_path)
+        # Calculate N_U such that the state is normalized
+        alpha = np.sqrt(mean_num_photons)
+        factor = np.exp(-(alpha * alpha))
+        N_U = 1
+        while abs(factor * sum(
+            [alpha**(2 * m) / np.math.factorial(m)
+             for m in range(0, N_U)]) - 1) > precision:
+            N_U += 1
+        rho0 = qt.tensor(qt.coherent(N_U, alpha), qt.basis(N_S, 1))
+        gaussian_ergotropy(init_state=rho0,
+                           sigma_start=sigma_start,
+                           sigma_stop=sigma_stop,
+                           output_path=complete_out_path,
+                           precision=precision)
     else:
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
@@ -213,8 +235,15 @@ if __name__ == "__main__":
     parser.add_argument('sigma_stop',
                         type=float,
                         help='stopping value of sigma')
+    parser.add_argument(
+        'precision',
+        type=float,
+        default=1e-3,
+        help='precision of the calculation, cannot be less than 1e-3')
+
     args = parser.parse_args()
     main(pulse_state=args.pulse_state,
          mean_num_photons=args.number_of_photons,
          sigma_start=args.sigma_start,
-         sigma_stop=args.sigma_stop)
+         sigma_stop=args.sigma_stop,
+         precision=args.precision)
