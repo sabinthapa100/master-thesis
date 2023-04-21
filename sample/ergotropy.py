@@ -160,15 +160,6 @@ def gaussian_ergotropy(init_state,
             f.write(str(max(ene_S)) + '\n')
         with open(out_pow_file, 'a') as f:
             f.write(str(max(pow_S)) + '\n')
-    # np.savetxt(
-    #     output_path + '/ergotropy_' + str(sigma_start) + '_' +
-    #     str(sigma_stop) + '.dat', np.array(max_erg_S))
-    # np.savetxt(
-    #     output_path + '/energy_' + str(sigma_start) + '_' + str(sigma_stop) +
-    #     '.dat', np.array(max_ene_S))
-    # np.savetxt(
-    #     output_path + '/power_' + str(sigma_start) + '_' + str(sigma_stop) +
-    #     '.dat', np.array(max_pow_S))
 
 
 def main(pulse_state,
@@ -182,17 +173,13 @@ def main(pulse_state,
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
         complete_out_path = output_path + subdir
-        if not os.path.exists(complete_out_path):
-            os.makedirs(complete_out_path)
         N_U = mean_num_photons + 1
         rho0 = qt.tensor(qt.basis(N_U, mean_num_photons), qt.basis(N_S, 1))
     elif pulse_state == 'squeezed':
         subdir = pulse_state + '_' + str(mean_num_photons)
         complete_out_path = output_path + subdir
-        if not os.path.exists(complete_out_path):
-            os.makedirs(complete_out_path)
         # Calculate N_U such that the state is normalized
-        r = np.sqrt(np.arcsinh(mean_num_photons))
+        r = -np.sqrt(np.arcsinh(mean_num_photons))
         ch_r = np.cosh(r)
         th_r = np.tanh(r)
         N_U = 1
@@ -206,8 +193,6 @@ def main(pulse_state,
     elif pulse_state == 'coherent':
         subdir = pulse_state + '_' + str(mean_num_photons)
         complete_out_path = output_path + subdir
-        if not os.path.exists(complete_out_path):
-            os.makedirs(complete_out_path)
         # Calculate N_U such that the state is normalized
         alpha = np.sqrt(mean_num_photons)
         factor = np.exp(-(alpha * alpha))
@@ -221,6 +206,9 @@ def main(pulse_state,
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
 
+    complete_out_path += '/precision_' + str(precision)
+    if not os.path.exists(complete_out_path):
+        os.makedirs(complete_out_path)
     gaussian_ergotropy(init_state=rho0,
                        sigma_start=sigma_start,
                        sigma_stop=sigma_stop,
