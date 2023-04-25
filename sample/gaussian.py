@@ -67,22 +67,24 @@ def gaussian_population(init_state,
                                              _args=args)),
         [input_pulse_state, gs_atom_state, excited_atom_state])
 
-    np.savetxt('./outputs/ergotropy/input_one_photon_' + str(sigma) + '.dat',
-               result.expect[0])
-    np.savetxt('./outputs/ergotropy/gs_atom_' + str(sigma) + '.dat',
+    np.savetxt(
+        './outputs/gaussian/population/input_one_photon_' + str(sigma) +
+        '.dat', result.expect[0])
+    np.savetxt('./outputs/gaussian/population/gs_atom_' + str(sigma) + '.dat',
                result.expect[1])
-    np.savetxt('./outputs/ergotropy/excited_atom_' + str(sigma) + '.dat',
-               result.expect[2])
+    np.savetxt(
+        './outputs/gaussian/population/excited_atom_' + str(sigma) + '.dat',
+        result.expect[2])
 
 
-def gaussian_ergotropy(init_state,
-                       sigma_start,
-                       sigma_stop,
-                       output_path,
-                       gamma=1.,
-                       w_0=1.,
-                       mu=0,
-                       precision=1e-3):
+def gaussian_max(init_state,
+                 sigma_start,
+                 sigma_stop,
+                 output_path,
+                 gamma=1.,
+                 w_0=1.,
+                 mu=0,
+                 precision=1e-3):
     """
     The goal is to calculate the ergotropy as a function of sigma,
     given an interaction with a Gaussian pulse.
@@ -100,8 +102,6 @@ def gaussian_ergotropy(init_state,
     # Hamiltonian of the system
     H_S = utils.qubit_H(w_0)
 
-    # Output lists
-    # max_erg_S, max_ene_S, max_pow_S = [], [], []
     out_erg_file = output_path + '/ergotropy_' + str(sigma_start) + '_' + str(
         sigma_stop) + '.dat'
     out_ene_file = output_path + '/energy_' + str(sigma_start) + '_' + str(
@@ -166,18 +166,18 @@ def main(pulse_state,
          mean_num_photons,
          sigma_start,
          sigma_stop,
-         precision=1e-3):
+         precision=1e-3,
+         max_flag=True):
     # gaussian_population(rho0)
-    output_path = "/home/pirota/master-thesis/sample/outputs/ergotropy/max_gaussian/"
     N_S = 2
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
-        complete_out_path = output_path + subdir
+        # complete_out_path = output_path + subdir
         N_U = mean_num_photons + 1
         rho0 = qt.tensor(qt.basis(N_U, mean_num_photons), qt.basis(N_S, 1))
     elif pulse_state == 'squeezed':
         subdir = pulse_state + '_' + str(mean_num_photons)
-        complete_out_path = output_path + subdir
+        # complete_out_path = output_path + subdir
         # Calculate N_U such that the state is normalized
         r = -np.sqrt(np.arcsinh(mean_num_photons))
         ch_r = np.cosh(r)
@@ -192,7 +192,7 @@ def main(pulse_state,
             qt.squeeze(N_U, r) * qt.basis(N_U, 0), qt.basis(N_S, 1))
     elif pulse_state == 'coherent':
         subdir = pulse_state + '_' + str(mean_num_photons)
-        complete_out_path = output_path + subdir
+        # complete_out_path = output_path + subdir
         # Calculate N_U such that the state is normalized
         alpha = np.sqrt(mean_num_photons)
         factor = np.exp(-(alpha * alpha))
@@ -206,14 +206,16 @@ def main(pulse_state,
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
 
-    complete_out_path += '/precision_' + str(precision)
-    if not os.path.exists(complete_out_path):
-        os.makedirs(complete_out_path)
-    gaussian_ergotropy(init_state=rho0,
-                       sigma_start=sigma_start,
-                       sigma_stop=sigma_stop,
-                       output_path=complete_out_path,
-                       precision=precision)
+    output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/"
+    if max_flag:
+        output_path += 'max/' + subdir + '/precision_' + str(precision)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        gaussian_max(init_state=rho0,
+                     sigma_start=sigma_start,
+                     sigma_stop=sigma_stop,
+                     output_path=output_path,
+                     precision=precision)
 
 
 if __name__ == "__main__":
@@ -239,10 +241,16 @@ if __name__ == "__main__":
         type=float,
         default=1e-3,
         help='precision of the calculation, cannot be less than 1e-3')
-
+    parser.add_argument(
+        'max_flag',
+        type=bool,
+        default=True,
+        help='if True calculate the maximum as a function of sigma,'
+        ' if False outputs the quantities for fixed sigma')
     args = parser.parse_args()
     main(pulse_state=args.pulse_state,
          mean_num_photons=args.number_of_photons,
          sigma_start=args.sigma_start,
          sigma_stop=args.sigma_stop,
-         precision=args.precision)
+         precision=args.precision,
+         max_flag=args.max_flag)
