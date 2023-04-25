@@ -77,6 +77,76 @@ def gaussian_population(init_state,
         result.expect[2])
 
 
+def gaussian_fixed_sigma(init_state,
+                         sigma_start,
+                         sigma_stop,
+                         output_path,
+                         gamma=1.,
+                         w_0=1.,
+                         mu=0,
+                         precision=1e-3):
+    # Constants of the simulation
+    w_0 *= gamma
+    sigma_start *= gamma
+    sigma_stop *= gamma
+    N_U = init_state.dims[0][0]
+    N_S = init_state.dims[0][1]
+
+    # Operators
+    operAu = qt.tensor(qt.destroy(N_U), qt.qeye(N_S))
+    operC = qt.tensor(qt.qeye(N_U), qt.sigmam())
+    # Hamiltonian of the system
+    H_S = utils.qubit_H(w_0)
+
+    for sigma in utils.range_decimal(sigma_start,
+                                     sigma_stop,
+                                     0.1,
+                                     stop_inclusive=True):
+
+        # print(float(sigma))
+        # Calculate time interval for the integration
+        t_min = -4 * float(sigma)
+        t_max = 4 * float(sigma)
+        dt = precision / gamma
+        steps = int((t_max - t_min) / dt)
+        tlist = np.linspace(t_min, t_max, steps)
+
+        # Define the correct args given the value of sigma
+        args = {'mu': mu, 'sigma': float(sigma)}
+
+        # Calculate all of the states
+        result = qt.mesolve(
+            lp.gaussian_total_H_t([operAu, operC], _gamma=gamma, _args=args),
+            init_state, tlist,
+            qt.lindblad_dissipator(
+                lp.gaussian_total_damping_oper_t(operAu,
+                                                 operC,
+                                                 _gamma=gamma,
+                                                 _args=args)))
+        # Get only the states for the system
+        rho_S = [result.states[i].ptrace(1) for i in range(len(result.states))]
+        complete_output_path = output_path + '/sigma_' + str(sigma)
+        if not os.path.exists(complete_output_path):
+            os.makedirs(complete_output_path)
+        out_erg_file = complete_output_path + '/ergotropy_' + str(sigma) + '.dat'
+        out_ene_file = complete_output_path + '/energy_' + str(sigma) + '.dat'
+        out_pow_file = complete_output_path + '/power_' + str(sigma) + '.dat'
+
+        with (open(out_erg_file, 'w') as f1,
+              open(out_ene_file, 'w') as f2,
+              open(out_pow_file, 'w') as f3):
+            erg0 = utils.ergotropy(H_S, rho_S[0])
+            for i in range(len(rho_S)):
+                erg = utils.ergotropy(H_S, rho_S[i])
+                f1.write(
+                    str(tlist[i]) + ' ' + str(erg) + '\n')
+                f2.write(
+                    str(tlist[i]) + ' ' + str(utils.energy(H_S, rho_S[i])) + '\n')
+                f3.write(
+                    str(tlist[i]) + ' ' + str(utils.power(erg, tlist[i],
+                                                          erg0, tlist[0])) + '\n')
+
+
 def gaussian_max(init_state,
                  sigma_start,
                  sigma_stop,
@@ -86,8 +156,8 @@ def gaussian_max(init_state,
                  mu=0,
                  precision=1e-3):
     """
-    The goal is to calculate the ergotropy as a function of sigma,
-    given an interaction with a Gaussian pulse.
+    The goal is to calculate the maximum of energy, ergotropy and
+    power as a function of sigma, given an interaction with a Gaussian pulse.
     """
     # Constants of the simulation
     w_0 *= gamma
@@ -216,6 +286,15 @@ def main(pulse_state,
                      sigma_stop=sigma_stop,
                      output_path=output_path,
                      precision=precision)
+    else:
+        output_path += 'fixed_sigma/' + subdir + '/precision_' + str(precision)
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        gaussian_fixed_sigma(init_state=rho0,
+                             sigma_start=sigma_start,
+                             sigma_stop=sigma_stop,
+                             output_path=output_path,
+                             precision=precision)
 
 
 if __name__ == "__main__":
@@ -239,12 +318,12 @@ if __name__ == "__main__":
     parser.add_argument(
         'precision',
         type=float,
+        nargs='?',
         default=1e-3,
         help='precision of the calculation, cannot be less than 1e-3')
     parser.add_argument(
-        'max_flag',
-        type=bool,
-        default=True,
+        '--max_flag',
+        action=argparse.BooleanOptionalAction,
         help='if True calculate the maximum as a function of sigma,'
         ' if False outputs the quantities for fixed sigma')
     args = parser.parse_args()
