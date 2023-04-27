@@ -150,7 +150,7 @@ def gaussian_fixed_sigma(init_state,
                 #     str(tlist[i]) + ' ' + str(utils.power(erg, tlist[i],
                 #                                           erg0, tlist[0])) + '\n')
                 f4.write(
-                    str(tlist[i]) + ' ' + str(qt.purity(rho_S[i])) + '\n')
+                    str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
 
 
 def gaussian_max(init_state,
