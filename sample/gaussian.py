@@ -227,11 +227,11 @@ def gaussian_max(init_state,
             pow_S.append(utils.power(erg_S[i], tlist[i], erg_S[0], tlist[0]))
         # Save the results to file
         with open(out_erg_file, 'a') as f:
-            f.write(str(max(erg_S)) + '\n')
+            f.write(str(sigma) + ' ' + str(max(erg_S)) + '\n')
         with open(out_ene_file, 'a') as f:
-            f.write(str(max(ene_S)) + '\n')
+            f.write(str(sigma) + ' ' + str(max(ene_S)) + '\n')
         with open(out_pow_file, 'a') as f:
-            f.write(str(max(pow_S)) + '\n')
+            f.write(str(sigma) + ' ' + str(max(pow_S)) + '\n')
 
 
 def main(pulse_state,
@@ -248,8 +248,8 @@ def main(pulse_state,
     # I'm looking at a small interval of sigma, so the simulation is rather
     # short, and I can afford to have a smaller dt for the integration
     # of the master equations
-    if sigma_step < 0.1:
-        precision *= sigma_step
+    # if sigma_step < 0.1:
+    #     precision *= sigma_step
 
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
