@@ -64,7 +64,7 @@ def two_qubits(sigma_start,
                precision=1e-3):
 
     # Define simulation constants
-    g = 0.2 * w_0
+    g = w_0
     # Hamiltonian of the system B
     H_B = utils.qubit_H(w_0)
     # Define the operators that acts on A and B
@@ -85,10 +85,10 @@ def two_qubits(sigma_start,
         tlist = np.linspace(t_min, t_max, steps)
 
         u_max = max(
-            [lp.gaussian_sqrt(tlist[i], 0, sigma) for i in range(tlist)])
+            [lp.gaussian_sqrt(t, 0, float(sigma)) for t in tlist])
 
-        F = 1j * np.sqrt(gaussian_gamma) * u_max * alpha_coherent
-
+        F = np.sqrt(gaussian_gamma) * u_max * alpha_coherent
+        F *= w_0
         N_B = 0.
         F_GAMMA = [0.05 * w_0, w_0]
 
@@ -113,10 +113,10 @@ def two_qubits(sigma_start,
                 for i in range(len(rho_B)):
                     f1.write(
                         str(tlist[i]) + ' ' +
-                        str(utils.ergotropy(H_B, rho_B[i])) + '\n')
+                        str(np.real(utils.ergotropy(H_B, rho_B[i])) / w_0) + '\n')
                     f2.write(
                         str(tlist[i]) + ' ' +
-                        str(utils.energy(H_B, rho_B[i])) + '\n')
+                        str(np.real(utils.energy(H_B, rho_B[i])) / w_0) + '\n')
 
 
 if __name__ == "__main__":
@@ -156,6 +156,6 @@ if __name__ == "__main__":
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     two_qubits(args.sigma_start, args.sigma_stop, args.sigma_step, output_path,
-               w_0=5., gaussian_gamma=1.,
+               w_0=1., gaussian_gamma=1.,
                alpha_coherent=np.sqrt(args.number_of_photons),
                precision=args.precision)
