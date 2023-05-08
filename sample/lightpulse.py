@@ -89,6 +89,35 @@ def g_u_v_exponential(_t, _args):
     return g_u_exponential(_t, _args) * g_v_exponential(_t, _args)
 
 
+###################################
+#  Rising Exponential shape pulse #
+###################################
+"""
+Rising exponential pulse shape is optimal to excite the atom
+"""
+
+
+def rising_exp(_t, _t0=0., _ap_coupling=1., _loss=1.):
+    if _t > _t0:
+        return 0
+    else:
+        return np.sqrt(_ap_coupling + _loss) * np.exp(
+            (_ap_coupling + _loss) * 0.5 * (_t - _t0))
+
+
+def g_u_rising_exp(_t, _args):
+    _AP_COUPLING = _args['AP_COUPLING']
+    _LOSS = _args['LOSS']
+    _T0 = _args['T0']
+    _EPS = _args['EPS']
+    if _t > _T0:
+        return 0
+    else:
+        return np.conj(rising_exp(
+            _t, _T0, _AP_COUPLING,
+            _LOSS)) / np.sqrt(1 - np.exp(_AP_COUPLING + _LOSS) * _EPS)
+
+
 ######################
 # Dynamics Operators #
 ######################
