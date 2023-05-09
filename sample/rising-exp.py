@@ -251,8 +251,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     main(pulse_state=args.pulse_state,
          mean_num_photons=args.number_of_photons,
-         sigma_start=args.t_start,
-         sigma_stop=args.t_stop,
-         sigma_step=args.eps,
+         t_start=args.t_start,
+         t_stop=args.t_stop,
+         eps=args.eps,
          precision=args.precision,
          pop_flag=args.pop)
