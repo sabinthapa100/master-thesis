@@ -98,6 +98,10 @@ Rising exponential pulse shape is optimal to excite the atom
 
 
 def rising_exp(_t, _t0=0., _ap_coupling=1., _loss=1.):
+    # print("rising_exp value:")
+    # print(
+    #     np.sqrt(_ap_coupling + _loss) * np.exp(
+    #         (_ap_coupling + _loss) * 0.5 * (_t - _t0)))
     return np.sqrt(_ap_coupling + _loss) * np.exp(
         (_ap_coupling + _loss) * 0.5 * (_t - _t0))
 
@@ -110,6 +114,12 @@ def g_u_rising_exp(_t, _args):
     if _t > _T0:
         return 0
     else:
+        # print("inside g_u_rising_exp:")
+        # print(
+        #     np.conj(
+        #         rising_exp(_t, _t0=_T0, _ap_coupling=_AP_COUPLING,
+        #                    _loss=_LOSS)) /
+        #     np.sqrt(1 - np.exp(_AP_COUPLING + _LOSS) * _EPS))
         return np.conj(
             rising_exp(_t, _t0=_T0, _ap_coupling=_AP_COUPLING, _loss=_LOSS)
         ) / np.sqrt(1 - np.exp(_AP_COUPLING + _LOSS) * _EPS)
