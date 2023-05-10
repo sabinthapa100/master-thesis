@@ -108,8 +108,7 @@ def rising_exp(_t, _t0=0., _gamma=1.):
 def g_u_rising_exp(_t, _args):
     _GAMMA = _args['GAMMA']
     _T0 = _args['t0']
-    _EPS = _args['eps']
-    if _t > _T0 - _EPS:
+    if _t >= _T0:
         return 0
     else:
         # print("inside g_u_rising_exp:")
