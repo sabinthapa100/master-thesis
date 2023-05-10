@@ -19,8 +19,8 @@ import utils
 import lightpulse as lp
 import qutip as qt
 import numpy as np
-# import time
 import os
+import cmath
 
 
 def gaussian_population(init_state,
@@ -105,7 +105,6 @@ def gaussian_fixed_sigma(init_state,
                                      sigma_step,
                                      stop_inclusive=True):
 
-        # print(float(sigma))
         # Calculate time interval for the integration
         t_min = -4 * float(sigma)
         t_max = 4 * float(sigma)
@@ -130,25 +129,20 @@ def gaussian_fixed_sigma(init_state,
         complete_output_path = output_path + '/sigma_' + str(sigma)
         if not os.path.exists(complete_output_path):
             os.makedirs(complete_output_path)
-        out_erg_file = complete_output_path + '/ergotropy_' + str(sigma) + '.dat'
+        out_erg_file = complete_output_path + '/ergotropy_' + str(
+            sigma) + '.dat'
         out_ene_file = complete_output_path + '/energy_' + str(sigma) + '.dat'
-        # out_pow_file = complete_output_path + '/power_' + str(sigma) + '.dat'
         out_pur_file = complete_output_path + '/purity_' + str(sigma) + '.dat'
 
         with (open(out_erg_file, 'w') as f1,
               open(out_ene_file, 'w') as f2,
-              # open(out_pow_file, 'w') as f3,
               open(out_pur_file, 'w') as f4):
-            # erg0 = utils.ergotropy(H_S, rho_S[0])
             for i in range(len(rho_S)):
                 erg = utils.ergotropy(H_S, rho_S[i])
                 f1.write(
                     str(tlist[i]) + ' ' + str(erg) + '\n')
                 f2.write(
                     str(tlist[i]) + ' ' + str(utils.energy(H_S, rho_S[i])) + '\n')
-                # f3.write(
-                #     str(tlist[i]) + ' ' + str(utils.power(erg, tlist[i],
-                #                                           erg0, tlist[0])) + '\n')
                 f4.write(
                     str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
 
@@ -196,7 +190,6 @@ def gaussian_max(init_state,
                                      sigma_step,
                                      stop_inclusive=True):
 
-        # print(float(sigma))
         # Calculate time interval for the integration
         t_min = -4 * float(sigma)
         t_max = 4 * float(sigma)
@@ -240,16 +233,10 @@ def main(pulse_state,
          sigma_stop,
          sigma_step,
          precision=1e-3,
+         custom_num_values=[],
          max_flag=True):
     # gaussian_population(rho0)
     N_S = 2
-
-    # This is under the assumption that if I want a small sigma_step,
-    # I'm looking at a small interval of sigma, so the simulation is rather
-    # short, and I can afford to have a smaller dt for the integration
-    # of the master equations
-    # if sigma_step < 0.1:
-    #     precision *= sigma_step
 
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
@@ -280,6 +267,14 @@ def main(pulse_state,
              for m in range(0, N_U)]) - 1) > precision:
             N_U += 1
         rho0 = qt.tensor(qt.coherent(N_U, alpha), qt.basis(N_S, 1))
+    elif pulse_state == 'custom':
+        subdir = pulse_state + '_' + str(mean_num_photons)
+        coeff_sq = np.linalg.solve([custom_num_values, [1, 1]],
+                                   [mean_num_photons, 1])
+        N_U = custom_num_values[-1] + 1
+        rho0 = cmath.sqrt(coeff_sq[0]) * qt.basis(
+            N_U, custom_num_values[0]) + cmath.sqrt(coeff_sq[1]) * qt.basis(
+                N_U, custom_num_values[1])
     else:
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
@@ -313,11 +308,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Simulate a gaussian pulse interacting with a qubit.')
     parser.add_argument('pulse_state',
-                        choices=['fock', 'squeezed', 'coherent'],
+                        choices=['fock', 'squeezed', 'coherent', 'custom'],
                         help='initial state of the pulse')
     parser.add_argument(
         'number_of_photons',
-        type=int,
+        type=float,
         nargs='?',
         default=1,
         help='mean value of photons in the pulse initial state')
@@ -342,6 +337,10 @@ if __name__ == "__main__":
         nargs='?',
         default=1e-3,
         help='precision of the calculation, cannot be more than 1e-3')
+    parser.add_argument('custom_num_values',
+                        type=int,
+                        nargs='*',
+                        help='use to define custum initial pulse state')
     parser.add_argument(
         '--max',
         action=argparse.BooleanOptionalAction,
@@ -354,4 +353,5 @@ if __name__ == "__main__":
          sigma_stop=args.sigma_stop,
          sigma_step=args.sigma_step,
          precision=args.precision,
+         custom_num_values=args.custom_num_values,
          max_flag=args.max)
