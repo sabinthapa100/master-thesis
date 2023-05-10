@@ -239,11 +239,12 @@ def main(pulse_state,
     N_S = 2
 
     if pulse_state == 'fock':
-        subdir = pulse_state + '_' + str(mean_num_photons)
-        N_U = mean_num_photons + 1
-        rho0 = qt.tensor(qt.basis(N_U, int(mean_num_photons)), qt.basis(N_S, 1))
+        subdir = pulse_state + '_' + str(int(mean_num_photons))
+        N_U = int(mean_num_photons) + 1
+        rho0 = qt.tensor(qt.basis(N_U, int(mean_num_photons)),
+                         qt.basis(N_S, 1))
     elif pulse_state == 'squeezed':
-        subdir = pulse_state + '_' + str(mean_num_photons)
+        subdir = pulse_state + '_' + str(int(mean_num_photons))
         # Calculate N_U such that the state is normalized
         r = np.sqrt(np.arcsinh(mean_num_photons))
         ch_r = np.cosh(r)
@@ -257,7 +258,7 @@ def main(pulse_state,
         rho0 = qt.tensor(
             qt.squeeze(N_U, r) * qt.basis(N_U, 0), qt.basis(N_S, 1))
     elif pulse_state == 'coherent':
-        subdir = pulse_state + '_' + str(mean_num_photons)
+        subdir = pulse_state + '_' + str(int(mean_num_photons))
         # Calculate N_U such that the state is normalized
         alpha = np.sqrt(mean_num_photons)
         factor = np.exp(-(alpha * alpha))
@@ -268,13 +269,14 @@ def main(pulse_state,
             N_U += 1
         rho0 = qt.tensor(qt.coherent(N_U, alpha), qt.basis(N_S, 1))
     elif pulse_state == 'custom':
-        subdir = pulse_state + '_' + str(mean_num_photons)
+        subdir = pulse_state + '_' + str(mean_num_photons) + '/pulse_state_' +\
+                str(custom_num_values[0]) + '_' + str(custom_num_values[1])
         coeff_sq = np.linalg.solve([custom_num_values, [1, 1]],
                                    [mean_num_photons, 1])
         N_U = custom_num_values[-1] + 1
-        rho0 = cmath.sqrt(coeff_sq[0]) * qt.basis(
-            N_U, custom_num_values[0]) + cmath.sqrt(coeff_sq[1]) * qt.basis(
-                N_U, custom_num_values[1])
+        rho_pulse = cmath.sqrt(coeff_sq[0]) * qt.basis(N_U, custom_num_values[0]) +\
+                    cmath.sqrt(coeff_sq[1]) * qt.basis(N_U, custom_num_values[1])
+        rho0 = qt.tensor(rho_pulse, qt.basis(N_S, 1))
     else:
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
