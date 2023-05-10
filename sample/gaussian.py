@@ -241,7 +241,7 @@ def main(pulse_state,
     if pulse_state == 'fock':
         subdir = pulse_state + '_' + str(mean_num_photons)
         N_U = mean_num_photons + 1
-        rho0 = qt.tensor(qt.basis(N_U, mean_num_photons), qt.basis(N_S, 1))
+        rho0 = qt.tensor(qt.basis(N_U, int(mean_num_photons)), qt.basis(N_S, 1))
     elif pulse_state == 'squeezed':
         subdir = pulse_state + '_' + str(mean_num_photons)
         # Calculate N_U such that the state is normalized
