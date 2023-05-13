@@ -25,7 +25,6 @@ import os
 def rising_exp_population(init_state,
                           t_start,
                           t_stop,
-                          eps,
                           output_path,
                           gamma=1.,
                           w_0=1.,
@@ -55,10 +54,8 @@ def rising_exp_population(init_state,
     excited_atom_state = qt.tensor(qt.qeye(N_U), qt.ket2dm(qt.basis(N_S, 0)))
 
     args = {
-        'ap_coupling': np.sqrt(gamma),
-        'loss': np.sqrt(gamma),
+        'GAMMA': gamma,
         't0': t_stop,
-        'eps': eps
     }
 
     # Run the simulation
@@ -80,7 +77,6 @@ def rising_exp_population(init_state,
 def rising_exp_sim(init_state,
                    t_start,
                    t_stop,
-                   eps,
                    output_path,
                    gamma=1.,
                    w_0=1.,
@@ -113,10 +109,8 @@ def rising_exp_sim(init_state,
 
     # Define the correct args
     args = {
-        'ap_coupling': np.sqrt(gamma),
-        'loss': np.sqrt(gamma),
+        'GAMMA': gamma,
         't0': t_stop,
-        'eps': eps
     }
 
     # Calculate all of the states
@@ -194,7 +188,6 @@ def main(pulse_state,
         rising_exp_population(init_state=rho0,
                               t_start=t_start,
                               t_stop=t_stop,
-                              eps=eps,
                               output_path=output_path,
                               precision=precision)
     else:
@@ -204,7 +197,6 @@ def main(pulse_state,
         rising_exp_sim(init_state=rho0,
                        t_start=t_start,
                        t_stop=t_stop,
-                       eps=eps,
                        output_path=output_path,
                        precision=precision)
 
@@ -234,12 +226,6 @@ if __name__ == "__main__":
                         default=0,
                         help='stopping value of t')
     parser.add_argument(
-        'eps',
-        type=float,
-        nargs='?',
-        default=1e-3,
-        help='need in order to obtain an analytical result for g_u')
-    parser.add_argument(
         'precision',
         type=float,
         nargs='?',
@@ -253,6 +239,5 @@ if __name__ == "__main__":
          mean_num_photons=args.number_of_photons,
          t_start=args.t_start,
          t_stop=args.t_stop,
-         eps=args.eps,
          precision=args.precision,
          pop_flag=args.pop)
