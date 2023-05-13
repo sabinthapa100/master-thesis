@@ -142,7 +142,6 @@ def main(pulse_state,
          mean_num_photons,
          t_start,
          t_stop,
-         eps,
          precision=1e-3,
          pop_flag=False):
     N_S = 2
