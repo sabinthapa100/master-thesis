@@ -107,9 +107,12 @@ def g_u_rising_exp(_t, _args):
     if _t >= _T0:
         return 0
     else:
-        return np.conj(rising_exp(
-            _t, _t0=_T0, _gamma=_GAMMA)) / np.sqrt(1 - np.exp(_GAMMA *
-                                                              (_t - _T0)))
+        try:
+            return np.conj(rising_exp(
+                _t, _t0=_T0, _gamma=_GAMMA)) / np.sqrt(1 - np.exp(_GAMMA *
+                                                                  (_t - _T0)))
+        except ZeroDivisionError:
+            return 0
 
 
 ######################
