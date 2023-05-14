@@ -55,9 +55,10 @@ def rising_exp_population(init_state,
 
     args = {
         'GAMMA': gamma,
-        't0': t_stop,
+        't0': 0,
     }
 
+    # opts = qt.Options(nsteps=10000)
     # Run the simulation
     result = qt.mesolve(
         lp.rising_exp_total_H_t([operAu, operC], _gamma=gamma,
@@ -67,7 +68,7 @@ def rising_exp_population(init_state,
                                                operC,
                                                _gamma=gamma,
                                                _args=args)),
-        [input_pulse_state, gs_atom_state, excited_atom_state])
+        [input_pulse_state, gs_atom_state, excited_atom_state])#, options=opts)
 
     np.savetxt(output_path + '/input_one_photon.dat', result.expect[0])
     np.savetxt(output_path + '/gs_atom.dat', result.expect[1])
@@ -110,9 +111,10 @@ def rising_exp_sim(init_state,
     # Define the correct args
     args = {
         'GAMMA': gamma,
-        't0': t_stop,
+        't0': 0,
     }
 
+    # opts = qt.Options(nsteps=10000)
     # Calculate all of the states
     result = qt.mesolve(
         lp.rising_exp_total_H_t([operAu, operC], _gamma=gamma, _args=args),
@@ -121,7 +123,7 @@ def rising_exp_sim(init_state,
             lp.rising_exp_total_damping_oper_t(operAu,
                                                operC,
                                                _gamma=gamma,
-                                               _args=args)))
+                                               _args=args)))#, options=opts)
     # Get only the states for the system
     rho_S = [result.states[i].ptrace(1) for i in range(len(result.states))]
 
