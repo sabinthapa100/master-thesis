@@ -322,16 +322,12 @@ def exponential_total_damping_oper_t(*_operators,
 def rising_exp_total_H_t(*_operators,
                          _gamma=1.,
                          _args={
-                             'ap_coupling': 1.,
-                             'loss': 1.,
+                             'GAMMA': 1.,
                              't0': 0.,
-                             'eps': 1e-3
                          }):
     """
     Returns the total interaction Hamiltonian in the case of Gaussian pulses
     """
-    # _args['ap_coupling'] *= np.sqrt(_gamma)
-    # _args['loss'] *= np.sqrt(_gamma)
     return 0.5 * 1j * qt.QobjEvo(
         [[only_input_inter_H(*_operators, _gamma=_gamma), g_u_rising_exp],
          [
@@ -344,10 +340,8 @@ def rising_exp_total_H_t(*_operators,
 def rising_exp_total_damping_oper_t(*_operators,
                                     _gamma=1.,
                                     _args={
-                                        'ap_coupling': 1.,
-                                        'loss': 1.,
+                                        'GAMMA': 1.,
                                         't0': 0.,
-                                        'eps': 1e-3
                                     }):
     """
     Return the damping operator L_0(t) in the case of exponential pulses
@@ -370,8 +364,6 @@ def rising_exp_total_damping_oper_t(*_operators,
     if not all([isinstance(oper, qt.Qobj) for oper in oper_list]):
         # raise error if one of the inputs is not a quantum object
         raise TypeError("One of inputs is not a quantum object")
-    # _args['ap_coupling'] *= np.sqrt(_gamma)
-    # _args['loss'] *= np.sqrt(_gamma)
     return qt.QobjEvo([
         utils.damping_oper(oper_list[1], _gamma=_gamma),
         [oper_list[0], g_u_rising_exp]
