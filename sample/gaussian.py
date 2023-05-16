@@ -269,14 +269,20 @@ def main(pulse_state,
             N_U += 1
         rho0 = qt.tensor(qt.coherent(N_U, alpha), qt.basis(N_S, 1))
     elif pulse_state == 'custom':
-        subdir = pulse_state + '_' + str(mean_num_photons) + '/pulse_state_' +\
-                str(custom_num_values[0]) + '_' + str(custom_num_values[1])
-        coeff_sq = np.linalg.solve([custom_num_values, [1, 1]],
-                                   [mean_num_photons, 1])
-        N_U = custom_num_values[-1] + 1
-        rho_pulse = cmath.sqrt(coeff_sq[0]) * qt.basis(N_U, custom_num_values[0]) +\
-                    cmath.sqrt(coeff_sq[1]) * qt.basis(N_U, custom_num_values[1])
-        rho0 = qt.tensor(rho_pulse, qt.basis(N_S, 1))
+        if mean_num_photons > custom_num_values[0] and mean_num_photons < custom_num_values[1]:
+            subdir = pulse_state + '_' + str(mean_num_photons) + '/pulse_state_' +\
+                    str(custom_num_values[0]) + '_' + str(custom_num_values[1])
+            coeff_sq = np.linalg.solve([custom_num_values, [1, 1]],
+                                       [mean_num_photons, 1])
+            N_U = custom_num_values[-1] + 1
+            rho_pulse = np.sqrt(coeff_sq[0]) * qt.basis(N_U, custom_num_values[0]) +\
+                        np.sqrt(coeff_sq[1]) * qt.basis(N_U, custom_num_values[1])
+            rho0 = qt.tensor(rho_pulse, qt.basis(N_S, 1))
+        else:
+            raise TypeError(
+                    "`mean_num_photons` must be between `custom_num_values`"
+                    "to have proper physical meaning"
+                    )
     else:
         raise TypeError(
             "`pulse_state` must either be fock, squeezed or coherent")
@@ -346,8 +352,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '--max',
         action=argparse.BooleanOptionalAction,
-        help='if True calculate the maximum as a function of sigma,'
-        ' if False outputs the quantities for fixed sigma')
+        help='if set calculate the maximum as a function of sigma,'
+        ' if not outputs the quantities for fixed sigma')
     args = parser.parse_args()
     main(pulse_state=args.pulse_state,
          mean_num_photons=args.number_of_photons,
