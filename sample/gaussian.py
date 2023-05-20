@@ -20,7 +20,6 @@ import lightpulse as lp
 import qutip as qt
 import numpy as np
 import os
-import cmath
 
 
 def gaussian_population(init_state,
