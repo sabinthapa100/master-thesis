@@ -65,7 +65,7 @@ def semiclassical_sim(sigma_start,
             lp.coherent_semiclassical_hamiltonian(sys_oper, lp.gaussian_sqrt,
                                                   args, alpha, gamma),
             init_state, tlist,
-            qt.lindblad_dissipator(utils.damping_oper([sys_oper], gamma)))
+            qt.lindblad_dissipator(utils.damping_oper(sys_oper, _gamma=gamma)))
         # Get only the states for the system
         rho_sys_final = [state.ptrace(1) for state in result.states]
 
