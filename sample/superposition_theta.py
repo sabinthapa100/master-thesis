@@ -50,6 +50,7 @@ def superposition_sim(in_state_dims,
 
     # output path
     output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/fixed_sigma/"
+    output_path += 'super_' + str(N_U)
     for sigma in utils.range_decimal(sigma_start,
                                      sigma_stop,
                                      sigma_step,
@@ -63,7 +64,7 @@ def superposition_sim(in_state_dims,
 
         # Define the correct args given the value of sigma
         args = {'mu': mu, 'sigma': float(sigma)}
-        output_path += 'super_' + str(N_U) + '/sigma_' + str(
+        sigma_dir = '/sigma_' + str(
             sigma) + '/precision_' + str(precision)
         for theta in angles:
             alpha, beta = np.cos(theta), np.sin(theta)
@@ -83,12 +84,12 @@ def superposition_sim(in_state_dims,
             # Get only the states for the system
             rho_sys_final = [state.ptrace(1) for state in result.states]
 
-            output_path += '/theta_' + str(theta)
-            if not os.path.exists(output_path):
-                os.makedirs(output_path)
-            out_erg_file = output_path + '/ergotropy.dat'
-            out_ene_file = output_path + '/energy.dat'
-            out_pur_file = output_path + '/purity.dat'
+            complete_output_path = output_path + sigma_dir + '/theta_' + str(theta)
+            if not os.path.exists(complete_output_path):
+                os.makedirs(complete_output_path)
+            out_erg_file = complete_output_path + '/ergotropy.dat'
+            out_ene_file = complete_output_path + '/energy.dat'
+            out_pur_file = complete_output_path + '/purity.dat'
 
             with (open(out_erg_file, 'w') as f1,
                   open(out_ene_file, 'w') as f2,
