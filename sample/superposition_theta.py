@@ -65,7 +65,6 @@ def superposition_sim(in_state_dims,
         args = {'mu': mu, 'sigma': float(sigma)}
         output_path += 'sigma_' + str(sigma) + '/precision_' + str(precision)
         for theta in angles:
-
             alpha, beta = np.cos(theta), np.sin(theta)
             rho_pulse = alpha * qt.basis(N_U, 0) + beta * qt.basis(
                 N_U, N_U - 1)
@@ -81,8 +80,66 @@ def superposition_sim(in_state_dims,
                                                      _gamma=gamma,
                                                      _args=args)))
             # Get only the states for the system
-            rho_S = [state.ptrace(1) for state in result.states]
+            rho_sys = [state.ptrace(1) for state in result.states]
 
             output_path += '/theta_' + str(theta)
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
+            out_erg_file = output_path + '/ergotropy.dat'
+            out_ene_file = output_path + '/energy.dat'
+            out_pur_file = output_path + '/purity.dat'
+
+            # with (open(out_erg_file, 'w') as f1,
+            #       open(out_ene_file, 'w') as f2,
+            #       open(out_pur_file, 'w') as f3):
+            #     for t, state in zip(tlist, rho_sys):
+            #         f1.write(
+            #             str(t) + ' ' + str(utils.ergotropy(H_S, state)) + '\n')
+            #         f2.write(
+            #             str(t) + ' ' + str(utils.energy(H_S, state)) + '\n')
+            #         f3.write(
+            #             str(t) + ' ' + str(state.purity()) + '\n')
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description='Simulate a gaussian pulse interacting with a qubit in a superposition state.')
+    parser.add_argument('in_state_dims',
+                        type=int,
+                        nargs='?',
+                        default=2,
+                        help='dimensions of the pulse state')
+    parser.add_argument('angles',
+                        type=int,
+                        nargs='?',
+                        default=4,
+                        help='number of angles to consider')
+    parser.add_argument('sigma_start',
+                        type=float,
+                        nargs='?',
+                        default=0.1,
+                        help='starting value of sigma')
+    parser.add_argument('sigma_stop',
+                        type=float,
+                        nargs='?',
+                        default=10,
+                        help='stopping value of sigma')
+    parser.add_argument('sigma_step',
+                        type=float,
+                        nargs='?',
+                        default=0.1,
+                        help='stepping value of sigma')
+    parser.add_argument('precision',
+                        type=float,
+                        nargs='?',
+                        default=1e-3,
+                        help='precision of the calculation')
+    args = parser.parse_args()
+    superposition_sim(in_state_dims=args.in_state_dims,
+                      sigma_start=args.sigma_start,
+                      sigma_stop=args.sigma_stop,
+                      sigma_step=args.sigma_step,
+                      num_angles=args.angles,
+                      precision=args.precision)
