@@ -31,12 +31,22 @@ import qutip as qt
 #########################
 
 
-def gaussian_sqrt(_t, _mu=0., _sigma=1.):
+def gaussian_sqrt(_t, _args):
     """
     Returns the Gaussian function
     """
+    _mu = _args['mu']
+    _sigma = _args['sigma']
     x = float(_t - _mu) / _sigma
     return math.sqrt(math.exp(-x * x / 2.) / math.sqrt(2 * math.pi) / _sigma)
+
+
+# def gaussian_sqrt(_t, _mu=0., _sigma=1.):
+#     """
+#     Returns the Gaussian function
+#     """
+#     x = float(_t - _mu) / _sigma
+#     return math.sqrt(math.exp(-x * x / 2.) / math.sqrt(2 * math.pi) / _sigma)
 
 
 def g_u_gaussian(_t, _args):
@@ -50,7 +60,7 @@ def g_u_gaussian(_t, _args):
     else:
         x = (_t - mu) / (math.sqrt(2) * sigma)
         denominator = math.sqrt(1 - 0.5 * (1 + math.erf(x)))
-        return gaussian_sqrt(_t, mu, sigma) / denominator
+        return gaussian_sqrt(_t, _args) / denominator
 
 
 ############################
@@ -372,3 +382,19 @@ def rising_exp_total_damping_oper_t(*_operators,
         [oper_list[0], g_u_rising_exp]
     ],
                       args=_args)
+
+
+##################################
+# Coherent semiclassical dynamic #
+##################################
+
+
+def coherent_semiclassical_hamiltonian(_sys_oper,
+                                       _pulse_function,
+                                       _args,
+                                       _alpha=1.,
+                                       _gamma=1.):
+    return 0.5 * np.sqrt(_gamma) * qt.QobjEvo(
+        [[np.conj(_alpha) * _sys_oper, _pulse_function],
+         [-1 * _alpha * _sys_oper.dag(), _pulse_function]],
+        args=_args)
