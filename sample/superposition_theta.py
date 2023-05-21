@@ -63,9 +63,10 @@ def superposition_sim(in_state_dims,
 
         # Define the correct args given the value of sigma
         args = {'mu': mu, 'sigma': float(sigma)}
-        output_path += 'superposition_' + str(N_U) + 'sigma_' + str(
+        output_path += 'super_' + str(N_U) + '/sigma_' + str(
             sigma) + '/precision_' + str(precision)
         for theta in angles:
+            print(theta)
             alpha, beta = np.cos(theta), np.sin(theta)
             rho_pulse = alpha * qt.basis(N_U, 0) + beta * qt.basis(
                 N_U, N_U - 1)
