@@ -66,8 +66,6 @@ def semiclassical_sim(sigma_start,
                                                   args, alpha, gamma),
             init_state, tlist,
             qt.lindblad_dissipator(utils.damping_oper(sys_oper, _gamma=gamma)))
-        # Get only the states for the system
-        rho_sys_final = [state.ptrace(1) for state in result.states]
 
         complete_output_path = output_path + sigma_dir
         if not os.path.exists(complete_output_path):
@@ -79,7 +77,7 @@ def semiclassical_sim(sigma_start,
         with (open(out_erg_file, 'w') as f1,
               open(out_ene_file, 'w') as f2,
               open(out_pur_file, 'w') as f3):
-            for t, state in zip(tlist, rho_sys_final):
+            for t, state in zip(tlist, result.states):
                 f1.write(
                     str(t) + ' ' + str(utils.ergotropy(H_S, state)) + '\n')
                 f2.write(
