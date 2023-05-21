@@ -66,10 +66,14 @@ def superposition_sim(in_state_dims,
         output_path += 'super_' + str(N_U) + '/sigma_' + str(
             sigma) + '/precision_' + str(precision)
         for theta in angles:
+            print(N_U)
             print(theta)
             alpha, beta = np.cos(theta), np.sin(theta)
+            print(alpha)
+            print(beta)
             rho_pulse = alpha * qt.basis(N_U, 0) + beta * qt.basis(
                 N_U, N_U - 1)
+            print(rho_pulse)
             rho0 = qt.tensor(rho_pulse, rho_sys)
             # Calculate all of the states
             result = qt.mesolve(
