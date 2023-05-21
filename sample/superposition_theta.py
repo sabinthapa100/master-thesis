@@ -63,7 +63,8 @@ def superposition_sim(in_state_dims,
 
         # Define the correct args given the value of sigma
         args = {'mu': mu, 'sigma': float(sigma)}
-        output_path += 'sigma_' + str(sigma) + '/precision_' + str(precision)
+        output_path += 'superposition_' + str(N_U) + 'sigma_' + str(
+            sigma) + '/precision_' + str(precision)
         for theta in angles:
             alpha, beta = np.cos(theta), np.sin(theta)
             rho_pulse = alpha * qt.basis(N_U, 0) + beta * qt.basis(
@@ -89,23 +90,25 @@ def superposition_sim(in_state_dims,
             out_ene_file = output_path + '/energy.dat'
             out_pur_file = output_path + '/purity.dat'
 
-            # with (open(out_erg_file, 'w') as f1,
-            #       open(out_ene_file, 'w') as f2,
-            #       open(out_pur_file, 'w') as f3):
-            #     for t, state in zip(tlist, rho_sys):
-            #         f1.write(
-            #             str(t) + ' ' + str(utils.ergotropy(H_S, state)) + '\n')
-            #         f2.write(
-            #             str(t) + ' ' + str(utils.energy(H_S, state)) + '\n')
-            #         f3.write(
-            #             str(t) + ' ' + str(state.purity()) + '\n')
+            with (open(out_erg_file, 'w') as f1,
+                  open(out_ene_file, 'w') as f2,
+                  open(out_pur_file, 'w') as f3):
+                for t, state in zip(tlist, rho_sys):
+                    f1.write(
+                        str(t) + ' ' + str(utils.ergotropy(H_S, state)) + '\n')
+                    f2.write(
+                        str(t) + ' ' + str(utils.energy(H_S, state)) + '\n')
+                    f3.write(
+                        str(t) + ' ' + str(state.purity()) + '\n')
 
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description='Simulate a gaussian pulse interacting with a qubit in a superposition state.')
+        description=
+        'Simulate a gaussian pulse interacting with a qubit in a superposition state.'
+    )
     parser.add_argument('in_state_dims',
                         type=int,
                         nargs='?',
