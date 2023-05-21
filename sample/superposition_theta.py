@@ -66,14 +66,9 @@ def superposition_sim(in_state_dims,
         output_path += 'super_' + str(N_U) + '/sigma_' + str(
             sigma) + '/precision_' + str(precision)
         for theta in angles:
-            print(N_U)
-            print(theta)
             alpha, beta = np.cos(theta), np.sin(theta)
-            print(alpha)
-            print(beta)
             rho_pulse = alpha * qt.basis(N_U, 0) + beta * qt.basis(
                 N_U, N_U - 1)
-            print(rho_pulse)
             rho0 = qt.tensor(rho_pulse, rho_sys)
             # Calculate all of the states
             result = qt.mesolve(
@@ -86,7 +81,7 @@ def superposition_sim(in_state_dims,
                                                      _gamma=gamma,
                                                      _args=args)))
             # Get only the states for the system
-            rho_sys = [state.ptrace(1) for state in result.states]
+            rho_sys_final = [state.ptrace(1) for state in result.states]
 
             output_path += '/theta_' + str(theta)
             if not os.path.exists(output_path):
@@ -98,7 +93,7 @@ def superposition_sim(in_state_dims,
             with (open(out_erg_file, 'w') as f1,
                   open(out_ene_file, 'w') as f2,
                   open(out_pur_file, 'w') as f3):
-                for t, state in zip(tlist, rho_sys):
+                for t, state in zip(tlist, rho_sys_final):
                     f1.write(
                         str(t) + ' ' + str(utils.ergotropy(H_S, state)) + '\n')
                     f2.write(
