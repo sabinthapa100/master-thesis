@@ -394,7 +394,7 @@ def coherent_semiclassical_hamiltonian(_sys_oper,
                                        _args,
                                        _alpha=1.,
                                        _gamma=1.):
-    return 0.5 * np.sqrt(_gamma) * qt.QobjEvo(
+    return 1j * np.sqrt(_gamma) * qt.QobjEvo(
         [[np.conj(_alpha) * _sys_oper, _pulse_function],
          [-1 * _alpha * _sys_oper.dag(), _pulse_function]],
         args=_args)
