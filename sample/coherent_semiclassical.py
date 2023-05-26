@@ -25,7 +25,7 @@ import os
 def semiclassical_sim(sigma_start,
                       sigma_stop,
                       sigma_step,
-                      alpha=1.,
+                      num_of_photons=1.,
                       gamma=1.,
                       w_0=1.,
                       mu=0,
@@ -35,6 +35,7 @@ def semiclassical_sim(sigma_start,
     sigma_start *= gamma
     sigma_stop *= gamma
     sigma_step *= gamma
+    alpha = np.sqrt(num_of_photons)
     # Initial state of the system
     init_state = qt.basis(2, 1)
     # Operator of the system
@@ -43,7 +44,7 @@ def semiclassical_sim(sigma_start,
     H_S = utils.qubit_H(w_0)
 
     output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/fixed_sigma/"
-    output_path += "coherent_semiclassical/" + str(int(alpha * alpha))
+    output_path += "coherent_semiclassical/" + str(int(num_of_photons))
     for sigma in utils.range_decimal(sigma_start,
                                      sigma_stop,
                                      sigma_step,
@@ -121,5 +122,5 @@ if __name__ == "__main__":
     semiclassical_sim(sigma_start=args.sigma_start,
                       sigma_stop=args.sigma_stop,
                       sigma_step=args.sigma_step,
-                      alpha=np.sqrt(args.num_of_photons),
+                      num_of_photons=args.num_of_photons,
                       precision=args.precision)
