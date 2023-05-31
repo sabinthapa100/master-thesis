@@ -72,9 +72,12 @@ def gaussian_fixed_sigma(init_state,
                                                  _gamma=gamma,
                                                  _args=args)), [psi_0, psi_2])
         # Save the output
-        np.savetxt(output_path + '/sigma_' + str(sigma) + '/psi_0.dat',
+        output_dir = output_path + '/sigma_' + str(sigma) + '/'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        np.savetxt(output_dir + 'psi_0.dat',
                    result.expect[0])
-        np.savetxt(output_path + '/sigma_' + str(sigma) + '/psi_2.dat',
+        np.savetxt(output_dir + '/psi_2.dat',
                    result.expect[1])
 
 
