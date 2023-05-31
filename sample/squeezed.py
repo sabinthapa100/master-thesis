@@ -43,9 +43,12 @@ def gaussian_fixed_sigma(init_state,
     operAu = qt.tensor(qt.destroy(N_U), qt.qeye(N_S))
     operC = qt.tensor(qt.qeye(N_U), qt.sigmam())
 
+    # Hamiltonian of the system
+    H_S = utils.qubit_H(w_0)
+
     # Output states
-    psi_0 = qt.tensor(qt.ket2dm(qt.basis(N_U, 0)), qt.qeye(N_S))
-    psi_2 = qt.tensor(qt.ket2dm(qt.basis(N_U, 2)), qt.qeye(N_S))
+    # psi_0 = qt.tensor(qt.ket2dm(qt.basis(N_U, 0)), qt.qeye(N_S))
+    # psi_2 = qt.tensor(qt.ket2dm(qt.basis(N_U, 2)), qt.qeye(N_S))
 
     for sigma in utils.range_decimal(sigma_start,
                                      sigma_stop,
@@ -70,16 +73,33 @@ def gaussian_fixed_sigma(init_state,
                 lp.gaussian_total_damping_oper_t(operAu,
                                                  operC,
                                                  _gamma=gamma,
-                                                 _args=args)), [psi_0, psi_2])
+                                                 _args=args)))
+        # Get only the states for the system
+        rho_S = [state.ptrace(1) for state in result.states]
+
         # Save the output
         output_dir = output_path + '/sigma_' + str(sigma) + '/'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        np.savetxt(output_dir + 'psi_0.dat',
-                   result.expect[0])
-        np.savetxt(output_dir + '/psi_2.dat',
-                   result.expect[1])
+        # np.savetxt(output_dir + 'psi_0.dat',
+        #            result.expect[0])
+        # np.savetxt(output_dir + '/psi_2.dat',
+        #            result.expect[1])
+        out_erg_file = output_dir + 'ergotropy.dat'
+        out_ene_file = output_dir + 'energy.dat'
+        out_pur_file = output_dir + 'purity.dat'
 
+        with (open(out_erg_file, 'w') as f1,
+              open(out_ene_file, 'w') as f2,
+              open(out_pur_file, 'w') as f3):
+            for i in range(len(rho_S)):
+                erg = utils.ergotropy(H_S, rho_S[i])
+                f1.write(
+                    str(tlist[i]) + ' ' + str(erg) + '\n')
+                f2.write(
+                    str(tlist[i]) + ' ' + str(utils.energy(H_S, rho_S[i])) + '\n')
+                f3.write(
+                    str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
 
 def main(mean_num_photons,
          sigma_start,
