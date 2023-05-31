@@ -26,6 +26,7 @@ def superposition_sim(in_state_dims,
                       sigma_start,
                       sigma_stop,
                       sigma_step,
+                      th_start=0.,
                       num_angles=4,
                       gamma=1.,
                       w_0=1.,
@@ -36,7 +37,7 @@ def superposition_sim(in_state_dims,
     sigma_start *= gamma
     sigma_stop *= gamma
     sigma_step *= gamma
-    angles = np.linspace(0, np.pi / 2, num_angles)
+    angles = np.linspace(th_start, np.pi / 2, num_angles)
     N_U = in_state_dims
     N_S = 2
     rho_sys = qt.basis(N_S, 1)
@@ -115,6 +116,11 @@ if __name__ == "__main__":
                         nargs='?',
                         default=2,
                         help='dimensions of the pulse state')
+    parser.add_argument('th_start',
+                        type=float,
+                        nargs='?',
+                        default=0.,
+                        help="define initial value of angles interval [th_start, pi/2]")
     parser.add_argument('angles',
                         type=int,
                         nargs='?',
@@ -145,5 +151,6 @@ if __name__ == "__main__":
                       sigma_start=args.sigma_start,
                       sigma_stop=args.sigma_stop,
                       sigma_step=args.sigma_step,
+                      th_start=args.th_start,
                       num_angles=args.angles,
                       precision=args.precision)
