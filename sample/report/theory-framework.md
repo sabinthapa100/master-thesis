@@ -2,9 +2,11 @@
 - [Theory Framework](#theory-framework)
   - [Quantum batteries](#quantum-batteries)
     - [Thermal work extraction](#thermal-work-extraction)
-    - [Reference](#reference)
+- [Reference](#reference)
 <!--toc:end-->
-## Theory Framework
+
+
+# Theory Framework
 
 Here is a brief presentation of the concepts, figures of merits and physical
 laws our thesis is based on. First I'll introduce ergotropy [1][2], then we'll
@@ -13,7 +15,7 @@ quantum system formalism [3]. Last but not least, we'll see how these two
 apparently unrelated topics are brought together in our work, giving the reader
 all the knowledge is needed to, hopefully, understand our results.
 
-### Quantum batteries
+## Quantum batteries
 
 In order to introduce ergotropy we need to familiarize with the concept of
 quantum batteries; from a formal point, _QBs_ are _d_-dimensional quantum
@@ -25,12 +27,12 @@ operation. But, how do we quantify ergotropy? Is it the same as the classical
 thermal work that can be extracted from a classical battery? The answer to the
 latter is no, and borrowing from [2] we'll see why.
 
-#### Thermal work extraction
+### Thermal work extraction
 
 Here we'll touch briefly the work extraction from a classical system, according
 to the laws of thermodynamics.
 
-#### Reference
+# Reference
 
 - [1](https://arxiv.org/abs/1805.05507v1)
 - [2](https://arxiv.org/abs/cond-mat/0401574v1)
