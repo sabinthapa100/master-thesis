@@ -31,7 +31,8 @@ def energy(_H, _rho):
 
 def ergotropy(_H, _rho):
     """
-    Function that calculates the ergotropy of state `_rho` on an Hamiltonian `_H`
+    Function that calculates the ergotropy of state `_rho` on an Hamiltonian
+    `_H`
     """
 
     # First, we calculate the energy expectation value
@@ -98,7 +99,8 @@ def power(_ef, _tf, _ei=0., _ti=0.):
 # copied from stackoverflow
 # https://stackoverflow.com/questions/39714647/can-you-use-float-numbers-in-this-for-loop
 def range_decimal(start, stop, step, stop_inclusive=False):
-    """ The Python range() function, using decimals.  A decimal loop_value generator.
+    """ The Python range() function, using decimals.  A decimal loop_value
+    generator.
 
     Note: The decimal math (addition) defines the rounding.
 
@@ -117,7 +119,8 @@ def range_decimal(start, stop, step, stop_inclusive=False):
     :param start: The loop start value
     :param stop: The loop stop value
     :param step: The loop step value
-    :param stop_inclusive: Include the stop value in the loop's yield generator: False = excluded ; True = included
+    :param stop_inclusive: Include the stop value in the loop's yield
+    generator: False = excluded ; True = included
     :return: The loop generator's yield increment value (decimal)
     """
     try:
@@ -154,13 +157,15 @@ def range_decimal(start, stop, step, stop_inclusive=False):
 
         # Case: increment step ( > 0 )
         if step > zero:
-            while start < stop:  # Yield the decimal loop points (stop value excluded)
+            # Yield the decimal loop points (stop value excluded)
+            while start < stop:
                 yield start
                 start += step
 
         # Case: decrement step ( < 0 )
         else:
-            while start > stop:  # Yield the decimal loop points (stop value excluded)
+            # Yield the decimal loop points (stop value excluded)
+            while start > stop:
                 yield start
                 start += step
 
