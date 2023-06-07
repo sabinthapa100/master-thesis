@@ -66,7 +66,7 @@ for a minimum of $E_{f} = tr[U(\tau) \rho U^{\dagger}(\tau) H_{0}]$ over all
 unitary operators $U$
 
 ```math
-W_{max} = tr[\rho H_{0}] - min_{U \in SU(d)} \{tr[U \rho U^{\dagger} H_{0}]\}.
+W_{max} = tr[\rho H_{0}] - \min_{U \in SU(d)} \{tr[U \rho U^{\dagger} H_{0}]\}.
 ```
 
 By carrying out the minimization we find that $\rho(\tau) = U(\tau) \rho
