@@ -102,6 +102,14 @@ the ergotropy $\varepsilon$ is defined, and calculated, as
 Note that we define ergotropy as a function of the initial state; in the next
 section we'll introduce an experimental setup to prepare $\rho$. This process
 can also be called *charging*.
+
+- digression on the classical case? Gibbsian state and thermal work, and in
+which cases thermal work and ergotropy are the same
+- why is the ordering important?
+
+## Section II
+### Battery charging via pulses of radiation
+
 # Reference
 
 - [1](https://arxiv.org/abs/1805.05507v1)
