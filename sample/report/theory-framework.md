@@ -1,8 +1,9 @@
 <!--toc:start-->
-
 - [Theory framework](#theory-framework)
   - [Section I](#section-i)
     - [Quantum batteries](#quantum-batteries)
+  - [Section II](#section-ii)
+    - [Battery charging via pulses of radiation](#battery-charging-via-pulses-of-radiation)
 - [Reference](#reference)
 <!--toc:end-->
 
