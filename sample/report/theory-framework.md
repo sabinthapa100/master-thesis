@@ -75,8 +75,8 @@ commutes with $H_{0}$ and has the same eigenvalues as
 $\rho$. In the spectral resolutions,
 
 ```math
-\rho = \sum_{k \leq 1} r_{k} |r_{k}\rangle \langle r_{k}|, \quad
-H = \sum_{j \leq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,
+\rho = \sum_{k \geq 1} r_{k} |r_{k}\rangle \langle r_{k}|, \quad
+H_0 = \sum_{j \geq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,
 ```
 
 we order the eigenvalues as
@@ -93,8 +93,15 @@ for
 ```
 
 Such a state is called _passive_ and no further work can be extracted from the
-battery after time $\tau$ by means of $V(t)$
+battery after time $\tau$ by means of $V(t)$. So, given an initial state $\rho$
+the ergotropy $\varepsilon$ is defined, and calculated, as
 
+```math
+\varepsilon(\rho) = tr[\rho H_{0}] - \sum_{j} r_k \epsilon_j
+```
+Note that we define ergotropy as a function of the initial state; in the next
+section we'll introduce an experimental setup to prepare $\rho$. This process
+can also be called *charging*.
 # Reference
 
 - [1](https://arxiv.org/abs/1805.05507v1)
