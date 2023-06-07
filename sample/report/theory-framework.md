@@ -105,9 +105,11 @@ and the minimum of $E_f$ is then $\sum_{j} r_k \epsilon_j$, and it is reached
 for
 
 ```
+
 $$
 \rho(\tau) = \sum_{k} r_k |\epsilon_k><\epsilon_k|.
 $$
+
 ```
 
 Such a state is called _passive_ and no further work can be extracted from the
