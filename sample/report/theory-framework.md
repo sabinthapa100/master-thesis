@@ -27,7 +27,7 @@ work that can be extracted from a QB via unitary operation.
 As stated above, a quantum battery is a _d_-dimesional system, with Hamiltonian
 $H_{0}$
 
-$$H_{0} = \sum_{j=1}^{d} \epsilon_{j}|j><j|,$$
+$$H_{0} = \sum_{j=1}^d \epsilon_{j}|j><j|,$$
 
 with non-degenerate energy levels such that $\epsilon_j < \epsilon_{j+1}$, and
 initial state described by the density operator $\rho$. The unitary evolution of
