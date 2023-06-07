@@ -70,12 +70,12 @@ W_{max} = tr[\rho H_{0}] - \min_{U \in SU(d)} \{tr[U \rho U^{\dagger} H_{0}]\}.
 ```
 
 By carrying out the minimization we find that 
-$\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau) H_{0}$ 
-commutes with $H$ and has the same eigenvalues as
+$\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau)$ 
+commutes with $H_{0}$ and has the same eigenvalues as
 $\rho$. In the spectral resolutions,
 
 ```math
-\rho = \sum_{k \leq 1} r_{k} |r_{k}\rangle \langle r_{k}|,
+\rho = \sum_{k \leq 1} r_{k} |r_{k}\rangle \langle r_{k}|, \quad
 H = \sum_{j \leq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,
 ```
 
