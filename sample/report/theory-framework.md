@@ -69,27 +69,27 @@ unitary operators $U$
 W_{max} = tr[\rho H_{0}] - \min_{U \in SU(d)} \{tr[U \rho U^{\dagger} H_{0}]\}.
 ```
 
-By carrying out the minimization we find that $\rho(\tau) = U(\tau) \rho
-U^{\dagger}(\tau) H_{0}$ commutes with $H$ and has the same eigenvalues as
+By carrying out the minimization we find that 
+$\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau) H_{0}$ 
+commutes with $H$ and has the same eigenvalues as
 $\rho$. In the spectral resolutions,
 
 ```math
-\rho = \sum_{k \leq 1} r_{k} |r_{k}><r_{k}|,
-H = \sum_{j \leq 1} \epsilon_{j} |\epsilon_j><\epsilon_j|,
+\rho = \sum_{k \leq 1} r_{k} |r_{k}\rangle \langle r_{k}|,
+H = \sum_{j \leq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,
 ```
 
 we order the eigenvalues as
 
 ```math
-r_{1} \geq r_2 \geq \dots,
-\epsilon_1 \leq \epsilon_2 \leq \dots,
+r_{1} \geq r_2 \geq \dots, \quad \epsilon_1 \leq \epsilon_2 \leq \dots,
 ```
 
 and the minimum of $E_f$ is then $\sum_{j} r_k \epsilon_j$, and it is reached
 for
 
 ```math
-\rho(\tau) = \sum_{k} r_k |\epsilon_k><\epsilon_k|.
+\rho(\tau) = \sum_{k} r_k |\epsilon_k\rangle \langle \epsilon_k|.
 ```
 
 Such a state is called _passive_ and no further work can be extracted from the
