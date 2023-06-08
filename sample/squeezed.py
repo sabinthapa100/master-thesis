@@ -101,6 +101,7 @@ def gaussian_fixed_sigma(init_state,
                 f3.write(
                     str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
 
+
 def main(mean_num_photons,
          sigma_start,
          sigma_stop,
@@ -116,12 +117,13 @@ def main(mean_num_photons,
     ch_r = np.cosh(r)
     th_r = np.tanh(r)
     N_U = 1
-    while abs(
-        (1 / ch_r) * sum([(th_r * 0.5)**(2 * m) * np.math.factorial(2 * m) /
-                          (np.math.factorial(m) * np.math.factorial(m))
-                          for m in range(0, N_U)]) - 1) > precision:
+    while abs((1 / ch_r) *
+              sum([(th_r * 0.5)**(2 * m) * np.math.factorial(2 * m) /
+                   (np.math.factorial(m) * np.math.factorial(m))
+                   for m in range(0, N_U)]) - 1) > precision:
         N_U += 1
-    rho0 = qt.tensor(qt.squeeze(2*N_U, r) * qt.basis(2*N_U, 0), qt.basis(N_S, 1))
+    rho0 = qt.tensor(
+        qt.squeeze(2 * N_U, r) * qt.basis(2 * N_U, 0), qt.basis(N_S, 1))
 
     output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/"
     output_path += 'fixed_sigma/' + subdir + '/precision_' + str(precision)
