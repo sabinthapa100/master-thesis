@@ -70,8 +70,8 @@ unitary operators $U$
 W_{max} = tr[\rho H_{0}] - \min_{U \in SU(d)} \{tr[U \rho U^{\dagger} H_{0}]\}.
 ```
 
-By carrying out the minimization we find that 
-$\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau)$ 
+By carrying out the minimization we find that
+$\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau)$
 commutes with $H_{0}$ and has the same eigenvalues as
 $\rho$. In the spectral resolutions,
 
