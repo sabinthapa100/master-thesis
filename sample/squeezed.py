@@ -122,6 +122,7 @@ def main(mean_num_photons,
                    (np.math.factorial(m) * np.math.factorial(m))
                    for m in range(0, N_U)]) - 1) > precision:
         N_U += 1
+    print(N_U)
     rho0 = qt.tensor(
         qt.squeeze(2 * N_U, r) * qt.basis(2 * N_U, 0), qt.basis(N_S, 1))
 
