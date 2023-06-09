@@ -3,7 +3,7 @@
   - [Section I](#section-i)
     - [Quantum batteries](#quantum-batteries)
   - [Section II](#section-ii)
-    - [Battery charging via pulses of radiation](#battery-charging-via-pulses-of-radiation)
+    - [Interaction via pulses of radiation](#interaction-via-pulses-of-radiation)
 - [Reference](#reference)
 <!--toc:end-->
 
@@ -109,7 +109,7 @@ which cases thermal work and ergotropy are the same
 - why is the ordering important?
 
 ## Section II
-### Battery charging via pulses of radiation
+### Interaction via pulses of radiation
 
 # Reference
 
