@@ -126,8 +126,8 @@ def main(mean_num_photons,
     rho0 = qt.tensor(
         qt.squeeze(2 * N_U, r) * qt.basis(2 * N_U, 0), qt.basis(N_S, 1))
     # check if I create the input state correctly
-    check_num_op = qt.tensor(qt.destroy(2 * N_U), qt.qeye(N_S))
-    print(qt.expect(check_num_op.dagger()*check_num_op, rho0))
+    # check_num_op = qt.tensor(qt.destroy(2 * N_U), qt.qeye(N_S))
+    # print(qt.expect(check_num_op.dag()*check_num_op, rho0))
 
     output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/"
     output_path += 'fixed_sigma/' + subdir + '/precision_' + str(precision)
