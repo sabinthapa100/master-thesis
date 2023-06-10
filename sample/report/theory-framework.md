@@ -4,7 +4,7 @@
   - [Section I](#section-i)
     - [Quantum batteries](#quantum-batteries)
   - [Section II](#section-ii)
-    - [Interaction via pulses of radiation](#interaction-via-pulses-of-radiation)
+    - [Interaction via quantum pulses of radiation](#interaction-via-quantum-pulses-of-radiation)
 - [Reference](#reference)
 <!--toc:end-->
 
@@ -12,10 +12,10 @@
 
 This chapter will review the concepts, figures of merits and physical laws our
 thesis is based on. In the first section we'll introduce quantum batteries and
-ergotropy, our main figure of merit [1][2]; the second section deals with the
-preparation of the initial state and the charging of the battery, introducing an
-experimental setup and how we can describe it with an open quantum system
-formalism [3].
+ergotropy, our main figure of merit [[1](#reference)][[2](#reference)]; the
+second section deals with the preparation of the initial state and the charging
+of the battery, introducing an experimental setup and how we can describe it
+with an open quantum system formalism [[3](#reference)].
 
 ## Section I
 
@@ -26,8 +26,7 @@ energy levels from which work can be reversibly extracted. We can think of them
 as miniature batteries, in which we store energy, and preserve it until needed,
 exactly as a classical battery. We define _ergotropy_ as the maximal amount of
 work that can be extracted from a QB via unitary operation.
-As stated above, a quantum battery is a _d_-dimesional system, with Hamiltonian
-$H_{0}$
+The Hamiltonian of this system is $H_{0}$
 
 $$H_0 = \sum_{j=1}^d \epsilon_j |j\rangle \langle j|,$$
 
@@ -64,8 +63,10 @@ $\rho(\tau) = U(\tau) \rho U^{\dagger}(\tau)$
 commutes with $H_{0}$ and has the same eigenvalues as
 $\rho$. In the spectral resolutions,
 
-$$\rho = \sum_{k \geq 1} r_{k} |r_{k}\rangle \langle r_{k}|, \quad
-H_0 = \sum_{j \geq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,$$
+$$
+\rho = \sum_{k \geq 1} r_{k} |r_{k}\rangle \langle r_{k}|, \quad
+H_0 = \sum_{j \geq 1} \epsilon_{j} |\epsilon_j\rangle \langle \epsilon_j|,
+$$
 
 we order the eigenvalues as
 
@@ -92,7 +93,28 @@ can also be called _charging_.
 
 ## Section II
 
-### Interaction via pulses of radiation
+### Interaction via quantum pulses of radiation
+
+There are multiple ways to prepare the initial state of the QB, for example by
+means of a laser. We choose the following setup, introduced by Kiilerich and
+Molmer [[3](#reference)].
+
+![experimental-setup](path)
+
+Here, the system (our QB) is described, in the Born-Markov approximation, by
+Hamiltonian $H_0$ and a set of $n$ dissipation operators $\{L_i\}_{i=1}^n$. The
+evolution of its quantum state $\rho$ is obtained by the Lindblad master
+equation
+
+$$\frac{d\rho}{dt} = -i[H_0,\rho] +\sum_{i=1}^n \mathit{D}[L_i]\rho.$$
+
+The system is coupled to an input bosonic field $b_{in}(t)$ by an interaction
+potential
+
+$$V(t) = i\sqrt(\gamma)[c b_{in}^\dagger(t) - c^\dagger b_{in}(t)],$$
+
+where $c$ is the system lowering operator and $\gamma$ the decay rate of
+excitations.
 
 # Reference
 
