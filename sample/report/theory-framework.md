@@ -106,15 +106,62 @@ Hamiltonian $H_0$ and a set of $n$ dissipation operators $\{L_i\}_{i=1}^n$. The
 evolution of its quantum state $\rho$ is obtained by the Lindblad master
 equation
 
-$$\frac{d\rho}{dt} = -i[H_0,\rho] +\sum_{i=1}^n \mathit{D}[L_i]\rho.$$
+$$\frac{d\rho}{dt} = -i[H_0,\rho] +\sum_{i=1}^n \mathcal{D}[L_i]\rho.$$
 
 The system is coupled to an input bosonic field $b_{in}(t)$ by an interaction
 potential
 
-$$V(t) = i\sqrt(\gamma)[c b_{in}^\dagger(t) - c^\dagger b_{in}(t)],$$
+$$V(t) = i\sqrt\gamma[c b_{in}^\dagger(t) - c^\dagger b_{in}(t)],$$
 
 where $c$ is the system lowering operator and $\gamma$ the decay rate of
-excitations.
+excitations. Our quantum state input shall occupy a single normalized wave
+packet $u(t)$; then the creation operator of the input field is described by
+
+$$b_{u}^\dagger = \int dt u(t)b^\dagger(t).$$
+
+Since it must be that $[b_u, b_{u}^\dagger] = \mathbb{I}$, we have the following
+normalization for $u(t)$
+
+$$\int dt \vert u(t) \vert ^2 = 1.$$
+
+To avoid treating spatio-temporal propagation of quantum fields, we can think of
+the wave packet $u(t)$ as emitted from a virtual one-sided cavity, coupled to
+a continuum input fields $b_{in}(t)$ via interaction potential
+
+$$V(t) = i[g^\star(t)ab_{in}^\dagger(t) - g(t)a^\dagger b_{in}(t)],$$
+
+where $a$ is an operator of the virtual one-sided cavity and $g(t)$ the complex
+coupling strength. Using the input output relation $b_{out}^\dagger(t) =
+b_{in}^\dagger(t) + g(t)a^\dagger(t)$, we recover our previous definition of
+$b_u^\dagger$ by choosing $b^\dagger(t) = b_{out}^\dagger(t)$. The virtual
+one-sided cavity acts as a coherent beam-splitter between the discrete
+intra-cavity modes and specific wave packets emanating from it. In particular,
+if $g(t)$ is chosen as
+
+$$g(t) = \frac{u^\star(t)}{\sqrt{1 - \int_0^t dt'\vert u(t') \vert ^2}}$$
+
+the initial intracavity quantum state at $t=0$ is emitted as a traveling wave
+packet given by $u(t)$. According to the theory of cascading quantum systems,
+the time evolution of the joint state $\rho_{us}$ of the cavity with field
+annihilation operator $a_{u}$ and the quantum system is described by a master
+equation in Lindblad form, with Hamiltonian
+
+$$
+H_{us}(t) = H_{0}(t) + i\frac{\sqrt{\gamma}}{2}(g_{u}(t)a_u^\dagger c -
+g_{u}^\star(t)a_u c^\dagger)
+$$
+
+and Lindblad term $\mathcal{D}[L_0^{us}(t)]$, with operator
+
+$$L_0^{us}(t) = g_u^\star(t)a_{u}+\sqrt{\gamma}c,$$
+
+in addition to the system jump operator.
+Combining all the terms in the master equation, we obtain
+
+$$\frac{d\rho_{us}}{dt} = -i[H_0,\rho_s] +\sum_{i=1}^n \mathcal{D}[L_i]\rho_s \\
++\sqrt{\gamma}[g_u^\star(t)(a_u\rho_{us}c^\dagger - a_u c^\dagger \rho_{us}) \\
++g_u(t)(c\rho_{us}a_u^\dagger - \rho_{us}a_u^\dagger c)]\\
++\mathcal{D}[\sqrt{\gamma}c]\rho_{us}+\mathcal{D}[g_u^\star(t)a_u]\rho_{us}.$$
 
 # Reference
 
