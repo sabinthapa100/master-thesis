@@ -113,7 +113,7 @@ def main(mean_num_photons,
 
     subdir = 'squeezed/' + str(int(mean_num_photons))
     # Calculate N_U such that the state is normalized
-    r = np.sqrt(np.arcsinh(mean_num_photons))
+    r = np.arcsinh(np.sqrt(mean_num_photons))
     ch_r = np.cosh(r)
     th_r = np.tanh(r)
     N_U = 1
