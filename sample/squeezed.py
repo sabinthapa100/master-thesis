@@ -111,7 +111,7 @@ def main(mean_num_photons,
     # gaussian_population(rho0)
     N_S = 2
 
-    subdir = 'squeezed_' + str(int(mean_num_photons))
+    subdir = 'squeezed/' + str(int(mean_num_photons))
     # Calculate N_U such that the state is normalized
     r = np.sqrt(np.arcsinh(mean_num_photons))
     ch_r = np.cosh(r)
