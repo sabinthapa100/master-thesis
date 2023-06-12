@@ -135,7 +135,7 @@ coupling strength. Using the input output relation $b_{out}^\dagger(t) =
 b_{in}^\dagger(t) + g(t)a^\dagger(t)$, we recover our previous definition of
 $b_u^\dagger$ by choosing $b^\dagger(t) = b_{out}^\dagger(t)$. The virtual
 one-sided cavity acts as a coherent beam-splitter between the discrete
-intra-cavity modes and specific wave packets emanating from it. In particular,
+intra-cavity modes and specific wave packet emanating from it. In particular,
 if $g(t)$ is chosen as
 
 $$g(t) = \frac{u^\star(t)}{\sqrt{1 - \int_0^t dt'\vert u(t') \vert ^2}}$$
@@ -158,10 +158,14 @@ $$L_0^{us}(t) = g_u^\star(t)a_{u}+\sqrt{\gamma}c,$$
 in addition to the system jump operator.
 Combining all the terms in the master equation, we obtain
 
-$$\frac{d\rho_{us}}{dt} = -i[H_0,\rho_s] +\sum_{i=1}^n \mathcal{D}[L_i]\rho_s \\
-+\sqrt{\gamma}[g_u^\star(t)(a_u\rho_{us}c^\dagger - a_u c^\dagger \rho_{us}) \\
-+g_u(t)(c\rho_{us}a_u^\dagger - \rho_{us}a_u^\dagger c)]\\
-+\mathcal{D}[\sqrt{\gamma}c]\rho_{us}+\mathcal{D}[g_u^\star(t)a_u]\rho_{us}.$$
+$$
+\begin{aligned}
+\frac{d\rho_{us}}{dt} &= -i[H_0,\rho_s] +\sum_{i=1}^n \mathcal{D}[L_i]\rho_s \\
+&+\sqrt{\gamma}[g_u^\star(t)(a_u\rho_{us}c^\dagger - a_u c^\dagger \rho_{us}) \\
+&+g_u(t)(c\rho_{us}a_u^\dagger - \rho_{us}a_u^\dagger c)]\\
+&+\mathcal{D}[\sqrt{\gamma}c]\rho_{us}+\mathcal{D}[g_u^\star(t)a_u]\rho_{us}.
+\end{aligned}
+$$
 
 # Reference
 
