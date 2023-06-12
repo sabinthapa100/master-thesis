@@ -89,17 +89,17 @@ def gaussian_fixed_sigma(init_state,
         out_ene_file = output_dir + 'energy.dat'
         out_pur_file = output_dir + 'purity.dat'
 
-        # with (open(out_erg_file, 'w') as f1,
-        #       open(out_ene_file, 'w') as f2,
-        #       open(out_pur_file, 'w') as f3):
-        #     for i in range(len(rho_S)):
-        #         erg = utils.ergotropy(H_S, rho_S[i])
-        #         f1.write(
-        #             str(tlist[i]) + ' ' + str(erg) + '\n')
-        #         f2.write(
-        #             str(tlist[i]) + ' ' + str(utils.energy(H_S, rho_S[i])) + '\n')
-        #         f3.write(
-        #             str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
+        with (open(out_erg_file, 'w') as f1,
+              open(out_ene_file, 'w') as f2,
+              open(out_pur_file, 'w') as f3):
+            for i in range(len(rho_S)):
+                erg = utils.ergotropy(H_S, rho_S[i])
+                f1.write(
+                    str(tlist[i]) + ' ' + str(erg) + '\n')
+                f2.write(
+                    str(tlist[i]) + ' ' + str(utils.energy(H_S, rho_S[i])) + '\n')
+                f3.write(
+                    str(tlist[i]) + ' ' + str(rho_S[i].purity()) + '\n')
 
 
 def main(mean_num_photons,
@@ -123,27 +123,27 @@ def main(mean_num_photons,
                    for m in range(0, N_U)]) - 1) > precision:
         N_U += 1
     # print(N_U)
-    # rho0 = qt.tensor(
-    #     qt.squeeze(2 * N_U, r) * qt.basis(2 * N_U, 0), qt.basis(N_S, 1))
-    rho_pulse = (1 / np.sqrt(ch_r)) * sum([(th_r * 0.5)**m * (np.sqrt(
-        (float(np.math.factorial(2 * m)))) / np.math.factorial(m)) *
-                                           qt.basis(2 * N_U, 2 * m)
-                                           for m in range(0, N_U)])
-    rho0 = qt.tensor(rho_pulse, qt.basis(N_S, 1))
+    rho0 = qt.tensor(
+        qt.squeeze(2 * N_U, r) * qt.basis(2 * N_U, 0), qt.basis(N_S, 1))
+    # rho_pulse = (1 / np.sqrt(ch_r)) * sum([(th_r * 0.5)**m * (np.sqrt(
+    #     (float(np.math.factorial(2 * m)))) / np.math.factorial(m)) *
+    #                                        qt.basis(2 * N_U, 2 * m)
+    #                                        for m in range(0, N_U)])
+    # rho0 = qt.tensor(rho_pulse, qt.basis(N_S, 1))
     # check if I create the input state correctly
-    check_num_op = qt.tensor(qt.destroy(2 * N_U), qt.qeye(N_S))
-    print(qt.expect(check_num_op.dag() * check_num_op, rho0))
+    # check_num_op = qt.tensor(qt.destroy(2 * N_U), qt.qeye(N_S))
+    # print(qt.expect(check_num_op.dag() * check_num_op, rho0))
 
     output_path = "/home/pirota/master-thesis/sample/outputs/gaussian/"
     output_path += 'fixed_sigma/' + subdir + '/precision_' + str(precision)
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    # gaussian_fixed_sigma(init_state=rho0,
-    #                      sigma_start=sigma_start,
-    #                      sigma_stop=sigma_stop,
-    #                      sigma_step=sigma_step,
-    #                      output_path=output_path,
-    #                      precision=precision)
+    gaussian_fixed_sigma(init_state=rho0,
+                         sigma_start=sigma_start,
+                         sigma_stop=sigma_stop,
+                         sigma_step=sigma_step,
+                         output_path=output_path,
+                         precision=precision)
 
 
 if __name__ == "__main__":
