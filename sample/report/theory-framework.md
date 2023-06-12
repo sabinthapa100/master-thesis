@@ -70,9 +70,9 @@ $$
 
 we order the eigenvalues as
 
-$$r_{1} \geq r_2 \geq \dots, \quad \epsilon_1 \leq \epsilon_2 \leq \dots,$$
+$$r_{1} \geq r_2 \geq \dots, \quad \epsilon_1 \leq \epsilon_2 \leq \dots.$$
 
-and the minimum of $E_f$ is then $\sum_{j} r_k \epsilon_j$, and it is reached
+The minimum of $E_f$ is then $\sum_{j} r_k \epsilon_j$, and it is reached
 for
 
 $$\rho(\tau) = \sum_{k} r_k |\epsilon_k\rangle \langle \epsilon_k|.$$
@@ -114,7 +114,7 @@ potential
 $$V(t) = i\sqrt\gamma[c b_{in}^\dagger(t) - c^\dagger b_{in}(t)],$$
 
 where $c$ is the system lowering operator and $\gamma$ the decay rate of
-excitations. Our quantum state input shall occupy a single normalized wave
+excitations. Our quantum input state shall occupy a single normalized wave
 packet $u(t)$; then the creation operator of the input field is described by
 
 $$b_{u}^\dagger = \int dt u(t)b^\dagger(t).$$
@@ -138,9 +138,9 @@ one-sided cavity acts as a coherent beam-splitter between the discrete
 intra-cavity modes and specific wave packet emanating from it. In particular,
 if $g(t)$ is chosen as
 
-$$g(t) = \frac{u^\star(t)}{\sqrt{1 - \int_0^t dt'\vert u(t') \vert ^2}}$$
+$$g(t) = \frac{u^\star(t)}{\sqrt{1 - \int_{-\infty}^t dt'\vert u(t') \vert ^2}}$$
 
-the initial intracavity quantum state at $t=0$ is emitted as a traveling wave
+the initial intracavity quantum state at $t=-\infty$ is emitted as a traveling wave
 packet given by $u(t)$. According to the theory of cascading quantum systems,
 the time evolution of the joint state $\rho_{us}$ of the cavity with field
 annihilation operator $a_{u}$ and the quantum system is described by a master
@@ -166,6 +166,18 @@ $$
 &+\mathcal{D}[\sqrt{\gamma}c]\rho_{us}+\mathcal{D}[g_u^\star(t)a_u]\rho_{us}.
 \end{aligned}
 $$
+
+Note that in the previous equation the Hamiltonian and
+$\mathcal{D}[L_0^{us}(t)]$ damping terms are such that $a_u(a_u^\dagger)$ acts
+on $\rho_{us}$ only from the left (right): quanta are only annihilated from the
+incoming pulse and never created in it, highlighting the cascaded nature of the
+scattering process.
+Resolving the equation via numerical methods yields $\rho_{us}(\tau)$, from
+which we can access the $\rho_s(\tau)$ via partial trace on the virtual cavity.
+
+- semiclassical Hamiltonian for coherent states in the pulse
+- maybe also output cavity?
+- anything else that I'm missing?
 
 # Reference
 
